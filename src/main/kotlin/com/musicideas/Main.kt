@@ -12,12 +12,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.musicideas.audio.JavaSoundEngine
 import com.musicideas.audio.recording.JavaSoundRecorder
-import com.musicideas.ui.components.MetronomeControl
+import com.musicideas.ui.components.MetronomeView
 import com.musicideas.ui.components.VolumeGauge
-import com.musicideas.ui.components.metronome.MetronomeController
+import com.musicideas.ui.components.MetronomeViewModel
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
-
 
 @Composable
 @Preview
@@ -25,7 +24,7 @@ fun App() {
     var isRecording by remember { mutableStateOf(false) }
     val audioEngine = remember { JavaSoundEngine() }
     val recorder = remember { JavaSoundRecorder() }
-    val metronomeController = remember { MetronomeController(audioEngine) }
+    val metronomeViewModel = remember { MetronomeViewModel(audioEngine) }
 
     MaterialTheme {
         Column(
@@ -46,7 +45,7 @@ fun App() {
             }
 
             VolumeGauge(recorder)
-            MetronomeControl(metronomeController)
+            MetronomeView(metronomeViewModel)
         }
     }
 }

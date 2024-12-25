@@ -1,9 +1,9 @@
-package com.musicideas.ui.components.metronome
+package com.musicideas.ui.components
 
 import com.musicideas.audio.AudioEngine
 import kotlinx.coroutines.*
 
-class MetronomeController(private val audioEngine: AudioEngine) {
+class MetronomeViewModel(private val audioEngine: AudioEngine) {
     private var bpm = 120
     private var isRunning = false
     private var tickJob: Job? = null

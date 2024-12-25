@@ -8,12 +8,10 @@ import androidx.compose.material.Slider
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.musicideas.ui.components.metronome.MetronomeController
 
 @Composable
-fun MetronomeControl(metronomeController: MetronomeController) {
+fun MetronomeView(metronomeViewModel: MetronomeViewModel) {
     var bpm by remember { mutableStateOf(120) }
     var isPlaying by remember { mutableStateOf(false) }
 
@@ -27,7 +25,7 @@ fun MetronomeControl(metronomeController: MetronomeController) {
                 value = bpm.toFloat(),
                 onValueChange = {
                     bpm = it.toInt()
-                    metronomeController.setBPM(bpm)
+                    metronomeViewModel.setBPM(bpm)
                 },
                 valueRange = 40f..208f
             )
@@ -36,9 +34,9 @@ fun MetronomeControl(metronomeController: MetronomeController) {
 
         Button(onClick = {
             if (isPlaying) {
-                metronomeController.stop()
+                metronomeViewModel.stop()
             } else {
-                metronomeController.start()
+                metronomeViewModel.start()
             }
             isPlaying = !isPlaying
         }) {
