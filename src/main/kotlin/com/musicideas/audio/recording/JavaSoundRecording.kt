@@ -93,7 +93,13 @@ class JavaSoundRecorder : AudioRecorder {
         // You might want to add a flag to stop the playback coroutine
     }
 
-    override fun getInputLevel(): Float = currentLevel
+    override fun getInputLevel(): Float {
+        if (recording) {
+            return currentLevel
+        } else {
+            return 0f
+        }
+    }
 
     private fun calculateRMSLevel(buffer: ByteArray, count: Int): Float {
         var sum = 0.0

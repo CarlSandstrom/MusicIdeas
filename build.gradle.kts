@@ -32,6 +32,7 @@ dependencies {
     implementation(compose.runtime)
     implementation(compose.foundation)
     implementation("br.com.devsrsouza.compose.icons:feather:1.1.0")  // For Feather icons
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.7.3")
 
 }
 
