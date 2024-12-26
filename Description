@@ -1,0 +1,5 @@
+This is a Kotlin/Jetbrains compose project for quickly and easy record musical ideas. When recorded, the sample can be put in a database, consisting of mp3/wav files and tags can be added, e.g. punk, rock, ballad, 80 guitar solo etc. It is a desktop project but soubl be made multiplatform later on. 
+
+Using a NavControl, some tabs are avalible: Recording, search and playback of already recorded and tagged samples, settings and settings for cloud storage.
+
+For the structure of the code, the principle of separation of concern is important. We employ a Model-View-ViewModel pattern.
