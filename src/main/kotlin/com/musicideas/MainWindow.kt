@@ -17,6 +17,11 @@ import com.musicideas.ui.screens.cloudstorage.CloudStorageView
 import com.musicideas.ui.screens.settings.SettingsView
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
+import androidx.compose.material.Icon
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.ui.Alignment
 
 @Composable
 fun MainWindow() {
@@ -72,8 +77,16 @@ private fun NavigationItem(
             .fillMaxWidth()
             .clickable(onClick = onSelect)
             .background(if (selected) Color(0xFFE0E0E0) else Color.Transparent)
-            .padding(16.dp)
+            .padding(16.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
+        Icon(
+            imageVector = item.icon,
+            contentDescription = item.title,
+            tint = if (selected) Color(0xFF2196F3) else Color.Black,
+            modifier = Modifier.size(24.dp)
+        )
+        Spacer(modifier = Modifier.width(12.dp))
         Text(
             text = item.title,
             color = if (selected) Color(0xFF2196F3) else Color.Black,

@@ -26,6 +26,11 @@ dependencies {
     implementation(compose.desktop.currentOs)
     implementation(compose.foundation)
     implementation(compose.ui)
+    implementation(compose.desktop.currentOs)
+    implementation(compose.material)
+    implementation(compose.materialIconsExtended)
+    implementation(compose.runtime)
+    implementation(compose.foundation)
     implementation("br.com.devsrsouza.compose.icons:feather:1.1.0")  // For Feather icons
 
 }

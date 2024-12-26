@@ -1,38 +1,40 @@
 package com.musicideas.ui.navigation
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CloudQueue
+import androidx.compose.material.icons.filled.LibraryMusic
+import androidx.compose.material.icons.filled.Mic
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
-import compose.icons.FeatherIcons  // We'll use Feather icons instead of Material icons
-import compose.icons.feathericons.Mic
-import compose.icons.feathericons.Music
-import compose.icons.feathericons.Cloud
-import compose.icons.feathericons.Settings
+
 
 sealed class NavigationItem(
     val route: String,
     val title: String,
     val icon: ImageVector
 ) {
-    object Record : NavigationItem(
+    data object Record : NavigationItem(
         route = "record",
         title = "Record",
-        icon = FeatherIcons.Mic
+        icon = Icons.Default.Mic
     )
 
-    object Library : NavigationItem(
+    data object Library : NavigationItem(
         route = "library",
         title = "Library",
-        icon = FeatherIcons.Music
+        icon = Icons.Default.LibraryMusic
     )
 
-    object CloudStorage : NavigationItem(
+    data object CloudStorage : NavigationItem(
         route = "cloud_storage",
         title = "Cloud Storage",
-        icon = FeatherIcons.Cloud
+        icon = Icons.Default.CloudQueue
     )
 
-    object Settings : NavigationItem(
+    data object Settings : NavigationItem(
         route = "settings",
         title = "Settings",
-        icon = FeatherIcons.Settings
+        icon = Icons.Default.Settings
     )
 }
