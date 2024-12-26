@@ -12,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.musicideas.ui.components.VolumeGauge
 
 @Composable
 fun RecordView(
@@ -57,7 +58,7 @@ fun RecordView(
                     .background(Color.LightGray.copy(alpha = 0.3f), RoundedCornerShape(8.dp))
                     .padding(4.dp)
             ) {
-                Text("Hej")
+                VolumeGauge(viewModel.getAudioRecorder())
             }
         }
 
