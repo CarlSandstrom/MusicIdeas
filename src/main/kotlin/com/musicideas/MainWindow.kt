@@ -21,86 +21,14 @@ import androidx.compose.material.Icon
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.Alignment
+import com.musicideas.ui.navigation.AppNavigation
+import com.musicideas.ui.navigation.MainViewModel
 
 @Composable
-fun MainWindow() {
-    val navController = rememberNavController()
-
-    val items = listOf(
-        NavigationItem.Record,
-        NavigationItem.Library,
-        NavigationItem.CloudStorage,
-        NavigationItem.Settings
-    )
-
-    Row {
-        // Side Navigation Panel
-        Column(
-            modifier = Modifier
-                .width(200.dp)
-                .fillMaxHeight()
-                .background(Color(0xFFF0F0F0))
-        ) {
-            items.forEach { item ->
-                NavigationItem(
-                    item = item,
-                    selected = navController.currentScreen.value == item.route,
-                    onSelect = { navController.navigate(item.route) }
-                )
-            }
-        }
-
-        // Content Area
-        Box(modifier = Modifier
-            .weight(1f)
-            .padding(16.dp)
-        ) {
-            when (navController.currentScreen.value) {
-                NavigationItem.Record.route -> RecordView()
-                NavigationItem.Library.route -> LibraryView()
-                NavigationItem.CloudStorage.route -> CloudStorageView()
-                NavigationItem.Settings.route -> SettingsView()
-            }
-        }
-    }
-}
-
-@Composable
-private fun NavigationItem(
-    item: NavigationItem,
-    selected: Boolean,
-    onSelect: () -> Unit
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onSelect)
-            .background(if (selected) Color(0xFFE0E0E0) else Color.Transparent)
-            .padding(16.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Icon(
-            imageVector = item.icon,
-            contentDescription = item.title,
-            tint = if (selected) Color(0xFF2196F3) else Color.Black,
-            modifier = Modifier.size(24.dp)
-        )
-        Spacer(modifier = Modifier.width(12.dp))
-        Text(
-            text = item.title,
-            color = if (selected) Color(0xFF2196F3) else Color.Black,
-            fontSize = 16.sp
-        )
-    }
-}
-
-// At the bottom of App.kt, after your App() composable
-fun main() = application {
-    Window(
-        onCloseRequest = ::exitApplication,
-        title = "Audio Recorder"
-    ) {
-        MainWindow()
+fun MainWindow(mainViewModel: MainViewModel) {
+    MaterialTheme {
+        AppNavigation(mainViewModel)
     }
 }

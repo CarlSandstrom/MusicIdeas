@@ -12,11 +12,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.musicideas.ui.screens.record.RecordViewModel
 
 @Composable
 fun RecordView(
-    viewModel: RecordViewModel = remember { RecordViewModel() }
+    viewModel: RecordViewModel
 ) {
     Column(
         modifier = Modifier
@@ -58,11 +57,7 @@ fun RecordView(
                     .background(Color.LightGray.copy(alpha = 0.3f), RoundedCornerShape(8.dp))
                     .padding(4.dp)
             ) {
-                Text(
-                    text = "V\nO\nL",
-                    modifier = Modifier.align(Alignment.Center),
-                    color = Color.Gray
-                )
+                Text("Hej")
             }
         }
 
@@ -143,7 +138,8 @@ fun RecordView(
             modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            val duration by viewModel.recordingDuration.collectAsState()
+            // val duration by viewModel.recordingDuration.collectAsState()
+            val duration = 0.0
 
             Text(
                 text = if (viewModel.isRecording) "Recording..." else "Ready to record",
@@ -165,13 +161,5 @@ fun RecordView(
             label = { Text("Add tags (comma-separated)") },
             modifier = Modifier.fillMaxWidth()
         )
-    }
-}
-
-@Preview
-@Composable
-fun RecordViewPreview() {
-    MaterialTheme {
-        RecordView()
     }
 }

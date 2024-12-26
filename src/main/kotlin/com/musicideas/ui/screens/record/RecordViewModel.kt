@@ -3,39 +3,36 @@ package com.musicideas.ui.screens.record
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import com.musicideas.audio.recording.AudioRecorder
 
-class RecordViewModel {
-    private var _isRecording by mutableStateOf(false)
-    val isRecording: Boolean get() = _isRecording
-
-    private var _isPlaying by mutableStateOf(false)
-    val isPlaying: Boolean get() = _isPlaying
-
-    private var _recordingDuration = MutableStateFlow(0L)
-    val recordingDuration: StateFlow<Long> = _recordingDuration
+class RecordViewModel(
+    private val audioRecorder: AudioRecorder // Injected dependency
+) {
+    val recordingDuration = 0
+    val isPlaying = false
+    var isRecording by mutableStateOf(false)
+        private set
 
     fun startRecording() {
-        _isRecording = true
-        // TODO: Implement actual recording logic
+        audioRecorder.startRecording()
+        isRecording = true
     }
 
     fun stopRecording() {
-        _isRecording = false
-        // TODO: Implement stop recording logic
+        audioRecorder.stopRecording()
+        isRecording = false
+    }
+
+    fun getAudioRecorder(): AudioRecorder = audioRecorder
+    fun moveCursorBackward() {
+        TODO("Not yet implemented")
     }
 
     fun togglePlayback() {
-        _isPlaying = !_isPlaying
-        // TODO: Implement playback logic
-    }
-
-    fun moveCursorBackward() {
-        // TODO: Implement cursor movement logic
+        TODO("Not yet implemented")
     }
 
     fun moveCursorForward() {
-        // TODO: Implement cursor movement logic
+        TODO("Not yet implemented")
     }
 }

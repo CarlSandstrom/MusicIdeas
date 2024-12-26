@@ -1,0 +1,26 @@
+// MainViewModel.kt
+package com.musicideas.ui.navigation
+
+import com.musicideas.AppContainer
+import com.musicideas.ui.screens.cloudstorage.CloudStorageViewModel
+import com.musicideas.ui.screens.library.LibraryViewModel
+import com.musicideas.ui.screens.record.RecordViewModel
+import com.musicideas.ui.screens.settings.SettingsViewModel
+
+class MainViewModel(private val appContainer: AppContainer) {
+    fun createRecordViewModel(): RecordViewModel {
+        return RecordViewModel(appContainer.audioRecorder)
+    }
+
+    fun createLibraryViewModel(): LibraryViewModel {
+        return LibraryViewModel()
+    }
+
+    fun createSettingsViewModel(): SettingsViewModel {
+        return SettingsViewModel()
+    }
+
+    fun createCloudStorageViewModel(): CloudStorageViewModel {
+        return CloudStorageViewModel()
+    }
+}
