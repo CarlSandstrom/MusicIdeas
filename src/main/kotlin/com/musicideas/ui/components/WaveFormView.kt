@@ -81,7 +81,7 @@ fun WaveformView(
         drawRect(Color.Black)
 
         // Draw waveform
-        drawWaveform(amplitudes, Color.Green)
+        drawWaveform(amplitudes, Color.Gray)
 
         // Draw playhead
         val playheadX = ((currentTimeMs - window.startTimeMs) / window.durationMs * size.width)

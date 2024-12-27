@@ -2,46 +2,62 @@ package com.musicideas.audio.recording
 
 import kotlinx.coroutines.*
 import java.io.ByteArrayOutputStream
+import java.util.concurrent.ConcurrentLinkedQueue
 import javax.sound.sampled.*
 import kotlin.math.sqrt
 
 class JavaSoundRecorder : AudioRecorder {
     private var recording = false
     private var line: TargetDataLine? = null
-    private val bufferSize = 4096
-    private val buffer = ByteArray(bufferSize)
+    private val bufferSize = 8192  // Increased buffer size
+    private val audioBufferQueue = ConcurrentLinkedQueue<ByteArray>()
     private var recordingJob: Job? = null
     private var currentLevel = 0f
 
-    // Dynamic buffer to store the recorded audio
-    private val audioBuffer = ByteArrayOutputStream()
+    private val audioFormat = AudioFormat(
+        44100f,  // Sample rate
+        16,      // Sample size in bits
+        1,       // Channels (stereo)
+        true,    // Signed
+        true     // Big endian
+    )
 
-    // Audio format for recording
-    private val audioFormat = AudioFormat(44100f, 16, 1, true, true)
+    private val audioBuffer = ByteArrayOutputStream()
 
     override fun startRecording() {
         if (recording) return
 
-        // Clear previous recording
         audioBuffer.reset()
+        audioBufferQueue.clear()
 
-        line = AudioSystem.getTargetDataLine(audioFormat).apply {
-            open(audioFormat, bufferSize)
-            start()
-        }
-
-        recording = true
-        recordingJob = CoroutineScope(Dispatchers.IO).launch {
-            while (recording) {
-                val count = line?.read(buffer, 0, bufferSize) ?: 0
-                if (count > 0) {
-                    // Store the recorded data
-                    audioBuffer.write(buffer, 0, count)
-                    // Update the current input level
-                    currentLevel = calculateRMSLevel(buffer, count)
-                }
-                delay(50) // Update level every 50ms
+        try {
+            val info = DataLine.Info(TargetDataLine::class.java, audioFormat)
+            if (!AudioSystem.isLineSupported(info)) {
+                throw LineUnavailableException("Line not supported")
             }
+
+            line = (AudioSystem.getLine(info) as TargetDataLine).apply {
+                open(audioFormat)
+                start()
+            }
+
+            recording = true
+            recordingJob = CoroutineScope(Dispatchers.IO).launch {
+                val buffer = ByteArray(bufferSize)
+                while (recording && isActive) {
+                    val count = line?.read(buffer, 0, buffer.size) ?: 0
+                    if (count > 0) {
+                        val audioData = buffer.copyOfRange(0, count)
+                        audioBufferQueue.offer(audioData)
+                        audioBuffer.write(audioData, 0, count)
+                        currentLevel = calculateRMSLevel(audioData, count)
+                    }
+                    yield() // Allow other coroutines to execute
+                }
+            }
+        } catch (e: Exception) {
+            stopRecording()
+            throw e
         }
     }
 
@@ -54,7 +70,6 @@ class JavaSoundRecorder : AudioRecorder {
     }
 
     override fun startPlayback() {
-        // Create an audio input stream from the recorded data
         val audioData = audioBuffer.toByteArray()
         val audioInputStream = AudioInputStream(
             audioData.inputStream(),
@@ -62,27 +77,29 @@ class JavaSoundRecorder : AudioRecorder {
             audioData.size.toLong() / audioFormat.frameSize
         )
 
-        // Get a source data line for playback
-        val dataLine = AudioSystem.getSourceDataLine(audioFormat).apply {
-            open(audioFormat)
-            start()
-        }
-
-        // Play the audio in a coroutine
         CoroutineScope(Dispatchers.IO).launch {
+            var sourceDataLine: SourceDataLine? = null
             try {
-                val playbackBuffer = ByteArray(bufferSize)
+                sourceDataLine = AudioSystem.getSourceDataLine(audioFormat).apply {
+                    open(audioFormat, bufferSize)
+                    start()
+                }
+
+                val playBuffer = ByteArray(bufferSize)
                 var bytesRead = 0
                 while (bytesRead != -1) {
-                    bytesRead = audioInputStream.read(playbackBuffer, 0, playbackBuffer.size)
+                    bytesRead = audioInputStream.read(playBuffer, 0, playBuffer.size)
                     if (bytesRead >= 0) {
-                        dataLine.write(playbackBuffer, 0, bytesRead)
+                        sourceDataLine.write(playBuffer, 0, bytesRead)
                     }
+                    yield() // Prevent blocking
                 }
             } finally {
-                dataLine.drain()
-                dataLine.stop()
-                dataLine.close()
+                sourceDataLine?.apply {
+                    drain()
+                    stop()
+                    close()
+                }
                 audioInputStream.close()
             }
         }
