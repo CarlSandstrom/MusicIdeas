@@ -16,7 +16,7 @@ import com.musicideas.ui.components.VolumeGauge
 import com.musicideas.ui.components.WaveformView
 
 @Composable
-fun RecordView(viewModel: RecordViewModel) {
+fun RecordView(viewModel: RecordViewModel, onSave: (ByteArray) -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -32,9 +32,10 @@ fun RecordView(viewModel: RecordViewModel) {
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxHeight()
-                    .border(width = 1.dp,
-                    color = Color.Gray,
-                    shape = RoundedCornerShape(4.dp)
+                    .border(
+                        width = 1.dp,
+                        color = Color.Gray,
+                        shape = RoundedCornerShape(4.dp)
                     )
             ) {
                 viewModel.audioData?.let { audioData ->
@@ -44,12 +45,14 @@ fun RecordView(viewModel: RecordViewModel) {
                     )
                 }
             }
-            Box (modifier = Modifier
-                .width(100.dp)
-                .border(width = 1.dp,
-                color = Color.Gray,
-                shape = RoundedCornerShape(4.dp)
-            )
+            Box(
+                modifier = Modifier
+                    .width(100.dp)
+                    .border(
+                        width = 1.dp,
+                        color = Color.Gray,
+                        shape = RoundedCornerShape(4.dp)
+                    )
             ) {
                 VolumeGauge(viewModel.getAudioRecorder())
             }
@@ -83,6 +86,15 @@ fun RecordView(viewModel: RecordViewModel) {
                 enabled = viewModel.audioData != null && !viewModel.isRecording
             ) {
                 Text("Stop")
+            }
+
+            viewModel.audioData?.let { audioData ->
+                Button(
+                    onClick = { onSave(audioData) },
+                    enabled = !viewModel.isRecording
+                ) {
+                    Text("Save")
+                }
             }
         }
     }

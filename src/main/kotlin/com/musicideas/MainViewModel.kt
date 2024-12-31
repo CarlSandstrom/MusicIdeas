@@ -6,6 +6,7 @@ import com.musicideas.ui.screens.cloudstorage.CloudStorageViewModel
 import com.musicideas.ui.screens.library.LibraryViewModel
 import com.musicideas.ui.screens.record.RecordViewModel
 import com.musicideas.ui.screens.settings.SettingsViewModel
+import com.musicideas.ui.screens.save.SaveViewModel
 
 class MainViewModel(private val appContainer: AppContainer) {
     fun createRecordViewModel(): RecordViewModel {
@@ -22,5 +23,9 @@ class MainViewModel(private val appContainer: AppContainer) {
 
     fun createCloudStorageViewModel(): CloudStorageViewModel {
         return CloudStorageViewModel()
+    }
+
+    fun createSaveViewModel(audioData: ByteArray, onSaveComplete: () -> Unit): SaveViewModel {
+        return SaveViewModel(audioData) {}
     }
 }
