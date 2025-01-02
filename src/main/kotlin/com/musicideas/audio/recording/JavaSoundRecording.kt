@@ -6,7 +6,7 @@ import java.util.concurrent.ConcurrentLinkedQueue
 import javax.sound.sampled.*
 import kotlin.math.sqrt
 
-class JavaSoundRecorder : AudioRecorder {
+open class JavaSoundRecorder : AudioRecorder {
     private var recording = false
     private var line: TargetDataLine? = null
     private val bufferSize = 8192  // Increased buffer size

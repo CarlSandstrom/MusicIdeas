@@ -4,6 +4,7 @@ plugins {
     kotlin("jvm")
     id("org.jetbrains.compose")
     id("org.jetbrains.kotlin.plugin.compose")
+    kotlin("plugin.serialization") version "1.9.0"
 }
 
 group = "org.example"
@@ -33,7 +34,9 @@ dependencies {
     implementation(compose.foundation)
     implementation("br.com.devsrsouza.compose.icons:feather:1.1.0")  // For Feather icons
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.7.3")
-
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
+    implementation("io.insert-koin:koin-core:3.5.0")
+    implementation("io.insert-koin:koin-compose:1.1.0")
 }
 
 compose.desktop {

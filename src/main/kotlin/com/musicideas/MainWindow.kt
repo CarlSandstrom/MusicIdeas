@@ -1,10 +1,10 @@
 package com.musicideas
 
 
-import androidx.compose.runtime.*
 import androidx.compose.material3.MaterialTheme
-import com.musicideas.ui.navigation.AppNavigation
-import com.musicideas.ui.navigation.MainViewModel
+import androidx.compose.runtime.Composable
+import com.musicideas.presentation.navigation.AppNavigation
+import com.musicideas.presentation.navigation.MainViewModel
 
 @Composable
 fun MainWindow(mainViewModel: MainViewModel) {
