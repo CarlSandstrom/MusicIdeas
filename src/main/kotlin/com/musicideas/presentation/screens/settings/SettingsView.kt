@@ -17,7 +17,7 @@ fun SettingsView(viewModel: SettingsViewModel) {
     ) {
         ComboBox(
             label = "Audio Quality",
-            options = AudioQuality.values().toList(),
+            options = AudioQuality.entries.toList(),
             selectedOption = viewModel.audioQuality,
             onOptionSelected = { viewModel.audioQuality = it }
         )

@@ -20,14 +20,14 @@ fun SaveView(viewModel: SaveViewModel) {
     ) {
         ComboBox(
             label = "Genre",
-            options = Genre.values().toList(),
+            options = Genre.entries.toList(),
             selectedOption = viewModel.genre,
             onOptionSelected = { viewModel.genre = it }
         )
 
         ComboBox(
             label = "Instrument",
-            options = Instrument.values().toList(),
+            options = Instrument.entries.toList(),
             selectedOption = viewModel.instrument,
             onOptionSelected = { viewModel.instrument = it }
         )
@@ -41,7 +41,7 @@ fun SaveView(viewModel: SaveViewModel) {
 
         ComboBox(
             label = "Type of Idea",
-            options = IdeaType.values().toList(),
+            options = IdeaType.entries.toList(),
             selectedOption = viewModel.ideaType,
             onOptionSelected = { viewModel.ideaType = it }
         )
