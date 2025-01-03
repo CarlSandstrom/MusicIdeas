@@ -1,8 +1,9 @@
 package com.musicideas.presentation.screens.record
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.material.Button
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -27,7 +28,7 @@ fun RecordView(viewModel: RecordViewModel, onSave: (ByteArray) -> Unit) {
             }
 
             Box(modifier = Modifier.width(100.dp)) {
-                VolumeGauge(level = viewModel.getInputLevel())
+                VolumeGauge(viewModel)
             }
         }
 
@@ -36,25 +37,27 @@ fun RecordView(viewModel: RecordViewModel, onSave: (ByteArray) -> Unit) {
                 onClick = {
                     if (viewModel.isRecording) viewModel.stopRecording()
                     else viewModel.startRecording()
-                }
+                },
+                enabled = !viewModel.isPlaying
             ) {
                 Text(if (viewModel.isRecording) "Stop" else "Record")
             }
 
             Button(
-                onClick = { viewModel.startPlayback() },
+                onClick = {
+                    if (viewModel.isPlaying) viewModel.stopPlayback()
+                    else viewModel.startPlayback()
+                },
                 enabled = viewModel.audioData != null && !viewModel.isRecording
             ) {
-                Text("Play")
+                Text(if (viewModel.isPlaying) "Stop" else "Play")
             }
 
-            viewModel.audioData?.let { audioData ->
-                Button(
-                    onClick = { onSave(audioData) },
-                    enabled = !viewModel.isRecording
-                ) {
-                    Text("Save")
-                }
+            Button(
+                onClick = { viewModel.audioData?.let { onSave(it) }},
+                enabled = (!viewModel.isRecording) && (!viewModel.isPlaying) && (viewModel.audioData != null)
+            ) {
+                Text("Save")
             }
         }
     }

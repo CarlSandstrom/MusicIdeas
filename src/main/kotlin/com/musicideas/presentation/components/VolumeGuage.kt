@@ -7,9 +7,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.musicideas.presentation.screens.record.RecordViewModel
+import kotlinx.coroutines.delay
 
 @Composable
-fun VolumeGauge(level: Float) {
+fun VolumeGauge(viewModel: RecordViewModel) {
+    var level by remember { mutableStateOf(0f) }
+
+    LaunchedEffect(Unit) {
+        while(true) {
+            level = viewModel.getInputLevel()
+            delay(50) // Update every 50ms
+        }
+    }
+
     BoxWithConstraints(
         modifier = Modifier.fillMaxSize().background(Color.Gray)
     ) {

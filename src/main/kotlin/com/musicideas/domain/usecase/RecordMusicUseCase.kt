@@ -5,11 +5,11 @@ import com.musicideas.domain.repository.AudioRepository
 class RecordMusicUseCase(
     private val audioRepository: AudioRepository
 ) {
-    suspend operator fun invoke(): Result<ByteArray> =
-        try {
-            audioRepository.startRecording().getOrThrow()
-            audioRepository.stopRecording()
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
+    // Changed to only start recording
+    suspend fun startRecording(): Result<Unit> =
+        audioRepository.startRecording()
+
+    // Added separate stop method
+    suspend fun stopRecording(): Result<ByteArray> =
+        audioRepository.stopRecording()
 }

@@ -9,13 +9,15 @@ import com.musicideas.domain.usecase.RecordMusicUseCase
 import com.musicideas.presentation.common.ViewModel
 import kotlinx.coroutines.launch
 
-
 class RecordViewModel(
     private val recordMusicUseCase: RecordMusicUseCase,
     private val playbackMusicUseCase: PlaybackMusicUseCase,
     private val audioRepository: AudioRepository
 ) : ViewModel() {
     var isRecording by mutableStateOf(false)
+        private set
+
+    var isPlaying by mutableStateOf(false)
         private set
 
     var currentTimeMs by mutableStateOf(0f)
@@ -26,9 +28,17 @@ class RecordViewModel(
 
     fun startRecording() {
         viewModelScope.launch {
-            isRecording = true
-            recordMusicUseCase().onSuccess { audio ->
+            recordMusicUseCase.startRecording().onSuccess {
+                isRecording = true
+            }
+        }
+    }
+
+    fun stopRecording() {
+        viewModelScope.launch {
+            recordMusicUseCase.stopRecording().onSuccess { audio ->
                 audioData = audio
+                isRecording = false
             }
         }
     }
@@ -37,18 +47,19 @@ class RecordViewModel(
         viewModelScope.launch {
             audioData?.let { audio ->
                 playbackMusicUseCase.startPlayback(audio)
+                isPlaying = true
             }
         }
     }
 
-    fun getInputLevel() = audioRepository.getInputLevel()
-
-    fun stopRecording() {
-        isRecording = false
+    fun stopPlayback() {
         viewModelScope.launch {
-            audioRepository.stopRecording().onSuccess { audio ->
-                audioData = audio
-            }
+            playbackMusicUseCase.stopPlayback()
+            isPlaying = false
         }
+    }
+
+    fun getInputLevel(): Float {
+        return audioRepository.getInputLevel()
     }
 }

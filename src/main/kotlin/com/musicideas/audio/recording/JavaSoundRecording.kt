@@ -8,10 +8,12 @@ import kotlin.math.sqrt
 
 open class JavaSoundRecorder : AudioRecorder {
     private var recording = false
+    private var playback = false
     private var line: TargetDataLine? = null
     private val bufferSize = 8192  // Increased buffer size
     private val audioBufferQueue = ConcurrentLinkedQueue<ByteArray>()
     private var recordingJob: Job? = null
+    private var playbackJob: Job? = null
     private var currentLevel = 0f
 
     private val audioFormat = AudioFormat(
@@ -25,7 +27,8 @@ open class JavaSoundRecorder : AudioRecorder {
     private val audioBuffer = ByteArrayOutputStream()
 
     override fun startRecording() {
-        if (recording) return
+        if (recording || playback) return
+
 
         audioBuffer.reset()
         audioBufferQueue.clear()
@@ -70,6 +73,8 @@ open class JavaSoundRecorder : AudioRecorder {
     }
 
     override fun startPlayback() {
+        if (recording || playback) return
+
         val audioData = audioBuffer.toByteArray()
         val audioInputStream = AudioInputStream(
             audioData.inputStream(),
@@ -77,7 +82,9 @@ open class JavaSoundRecorder : AudioRecorder {
             audioData.size.toLong() / audioFormat.frameSize
         )
 
-        CoroutineScope(Dispatchers.IO).launch {
+        playback = true
+
+        playbackJob = CoroutineScope(Dispatchers.IO).launch {
             var sourceDataLine: SourceDataLine? = null
             try {
                 sourceDataLine = AudioSystem.getSourceDataLine(audioFormat).apply {
@@ -87,7 +94,7 @@ open class JavaSoundRecorder : AudioRecorder {
 
                 val playBuffer = ByteArray(bufferSize)
                 var bytesRead = 0
-                while (bytesRead != -1) {
+                while ((bytesRead != -1) && playback) {
                     bytesRead = audioInputStream.read(playBuffer, 0, playBuffer.size)
                     if (bytesRead >= 0) {
                         sourceDataLine.write(playBuffer, 0, bytesRead)
@@ -106,15 +113,15 @@ open class JavaSoundRecorder : AudioRecorder {
     }
 
     override fun stopPlayback() {
-        // Implementation would depend on how you want to handle playback interruption
-        // You might want to add a flag to stop the playback coroutine
+        playback = false
+        // playbackJob?.cancel()
     }
 
     override fun getInputLevel(): Float {
         if (recording) {
             return currentLevel
         } else {
-            return 0f
+            return currentLevel
         }
     }
 
