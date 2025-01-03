@@ -15,7 +15,7 @@ class MusicIdeaLocalDataSourceImpl(
     }
 
     override suspend fun saveMusicIdea(musicIdea: MusicIdea) {
-        val audioFile = File(audioDir, "${musicIdea.id}.wav")
+        val audioFile = File(audioDir, "${musicIdea.id}.raw")
         audioFile.writeBytes(musicIdea.audioData)
 
         // For now storing metadata as separate files
@@ -25,7 +25,7 @@ class MusicIdeaLocalDataSourceImpl(
     }
 
     override suspend fun getMusicIdea(id: String): MusicIdea? {
-        val audioFile = File(audioDir, "$id.wav")
+        val audioFile = File(audioDir, "$id.raw")
         val metadataFile = File(metadataDir, "$id.json")
 
         if (!audioFile.exists() || !metadataFile.exists()) return null
@@ -36,7 +36,7 @@ class MusicIdeaLocalDataSourceImpl(
     override suspend fun getAllMusicIdeas(): List<MusicIdea> {
         return metadataDir.listFiles()?.mapNotNull { metadataFile ->
             val id = metadataFile.nameWithoutExtension
-            val audioFile = File(audioDir, "$id.wav")
+            val audioFile = File(audioDir, "$id.raw")
             if (audioFile.exists()) {
                 deserializeMusicIdea(id, audioFile, metadataFile)
             } else null

@@ -32,14 +32,14 @@ fun MusicIdeaItem(
             ) {
                 Text(
                     "${musicIdea.metadata.ideaType} - ${musicIdea.metadata.instrument}",
-                    style = MaterialTheme.typography.bodyLarge
+                    style = MaterialTheme.typography.bodyMedium
                 )
                 Text("${musicIdea.metadata.tempo} BPM")
             }
 
             Text(
                 musicIdea.metadata.genre.toString(),
-                style = MaterialTheme.typography.headlineSmall
+                style = MaterialTheme.typography.bodyMedium
             )
 
             if (!musicIdea.metadata.tags.isEmpty()) {
@@ -73,7 +73,7 @@ private fun Chip(text: String) {
         Text(
             text = text,
             modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-            style = MaterialTheme.typography.headlineMedium
+            style = MaterialTheme.typography.bodyMedium
         )
     }
 }
