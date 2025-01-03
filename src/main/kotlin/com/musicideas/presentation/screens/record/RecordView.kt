@@ -35,22 +35,30 @@ fun RecordView(viewModel: RecordViewModel, onSave: (ByteArray) -> Unit) {
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Button(
                 onClick = {
-                    if (viewModel.isRecording) viewModel.stopRecording()
-                    else viewModel.startRecording()
+                    viewModel.startPlayback()
                 },
-                enabled = !viewModel.isPlaying
+                enabled = !viewModel.isPlaying && !viewModel.isRecording && viewModel.audioData != null
             ) {
-                Text(if (viewModel.isRecording) "Stop" else "Record")
+                Text("Play")
             }
 
             Button(
                 onClick = {
-                    if (viewModel.isPlaying) viewModel.stopPlayback()
-                    else viewModel.startPlayback()
+                    viewModel.startRecording()
                 },
-                enabled = viewModel.audioData != null && !viewModel.isRecording
+                enabled = !viewModel.isRecording && !viewModel.isPlaying
             ) {
-                Text(if (viewModel.isPlaying) "Stop" else "Play")
+                Text("Record")
+            }
+
+            Button(
+                onClick = {
+                    viewModel.stopRecording()
+                    viewModel.stopPlayback()
+                },
+                enabled = viewModel.isRecording || viewModel.isPlaying
+            ) {
+                Text("Stop")
             }
 
             Button(
