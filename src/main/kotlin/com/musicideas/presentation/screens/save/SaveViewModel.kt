@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import com.musicideas.domain.model.Genre
 import com.musicideas.domain.model.IdeaType
 import com.musicideas.domain.model.Instrument
+import com.musicideas.domain.model.MusicIdea
 import com.musicideas.domain.usecase.SaveMusicIdeaUseCase
 import com.musicideas.presentation.common.ViewModel
 import kotlinx.coroutines.launch
@@ -13,15 +14,19 @@ import kotlinx.coroutines.launch
 class SaveViewModel(
     private val audioData: ByteArray,
     private val saveMusicIdeaUseCase: SaveMusicIdeaUseCase,
-    private val onSaveComplete: () -> Unit
+    private val onSaveComplete: () -> Unit,
+    existingMusicIdea: MusicIdea? = null
 ) : ViewModel() {
-    var name by mutableStateOf("")
-    var genre by mutableStateOf(Genre.ROCK)
-    var instrument by mutableStateOf(Instrument.GUITAR)
-    var tempo by mutableStateOf(120)
-    var ideaType by mutableStateOf(IdeaType.RIFF)
-    var customTags by mutableStateOf("")
-    var tempoString by mutableStateOf("120")
+    var id by mutableStateOf(existingMusicIdea?.id ?: "")
+    var name by mutableStateOf(existingMusicIdea?.metadata?.name ?: "")
+    var genre by mutableStateOf(existingMusicIdea?.metadata?.genre ?: Genre.ROCK)
+    var instrument by mutableStateOf(existingMusicIdea?.metadata?.instrument ?: Instrument.GUITAR)
+    var tempo by mutableStateOf(existingMusicIdea?.metadata?.tempo ?: 120)
+    var ideaType by mutableStateOf(existingMusicIdea?.metadata?.ideaType ?: IdeaType.RIFF)
+    var customTags by mutableStateOf(existingMusicIdea?.metadata?.tags?.joinToString(",") ?: "")
+    var tempoString by mutableStateOf((existingMusicIdea?.metadata?.tempo ?: 120).toString())
+
+    val isEditing = existingMusicIdea != null
 
     fun updateTempo(newTempoStr: String) {
         tempoString = newTempoStr
@@ -41,7 +46,8 @@ class SaveViewModel(
                 instrument = instrument,
                 tempo = tempo,
                 ideaType = ideaType,
-                tags = customTags.split(",").map { it.trim() }.filter { it.isNotEmpty() }
+                tags = customTags.split(",").map { it.trim() }.filter { it.isNotEmpty() },
+                existingId = id
             ).onSuccess {
                 onSaveComplete()
             }

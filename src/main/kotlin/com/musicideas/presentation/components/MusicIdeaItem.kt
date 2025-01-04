@@ -9,10 +9,7 @@ import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.Share
-import androidx.compose.material.icons.filled.Stop
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -33,6 +30,7 @@ fun MusicIdeaItem(
     onStop: () -> Unit = {},
     onShare: () -> Unit = {},
     onDelete: () -> Unit = {},
+    onEdit: () -> Unit = {},
     isPlaying: Boolean = false
 ) {
     val interactionSource = remember { MutableInteractionSource() }
@@ -82,7 +80,7 @@ fun MusicIdeaItem(
 
                 // Controls shown when selected
                 AnimatedVisibility(
-                    visible = isSelected,
+                    visible = isHovered,
                     enter = fadeIn() + expandHorizontally(),
                     exit = fadeOut() + shrinkHorizontally()
                 ) {
@@ -111,6 +109,14 @@ fun MusicIdeaItem(
                             Icon(
                                 Icons.Default.Delete,
                                 contentDescription = "Delete"
+                            )
+                        }
+
+                        // Add a button to edit the music idea
+                        IconButton(onClick = onEdit) {
+                            Icon(
+                                Icons.Default.Edit,
+                                contentDescription = "Edit"
                             )
                         }
                     }

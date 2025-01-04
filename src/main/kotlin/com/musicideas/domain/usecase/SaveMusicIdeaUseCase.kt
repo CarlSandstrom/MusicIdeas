@@ -14,19 +14,21 @@ class SaveMusicIdeaUseCase(
         instrument: Instrument,
         tempo: Int,
         ideaType: IdeaType,
-        tags: List<String>
+        tags: List<String>,
+        existingId: String? = null
     ): Result<Unit> {
         val musicIdea = MusicIdea(
-            id = UUID.randomUUID().toString(),
+            id = existingId ?: UUID.randomUUID().toString(),
             metadata = MusicIdeaMetadata(
                 name = name,
                 genre = genre,
                 instrument = instrument,
                 tempo = tempo,
                 ideaType = ideaType,
-                tags = tags
+                tags = tags,
+                createdAt = System.currentTimeMillis()
             ),
-            audioDataProvider = { audioData } // Provide audio data directly when saving
+            audioDataProvider = { audioData }
         )
         return repository.save(musicIdea)
     }

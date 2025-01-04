@@ -38,6 +38,22 @@ class LibraryViewModel(
     val musicIdeas: List<MusicIdea> get() = _musicIdeas
     val filterState: FilterState get() = _filterState
 
+    var selectedMusicIdeaId by mutableStateOf<String?>(null)
+        private set
+    var playingMusicIdeaId by mutableStateOf<String?>(null)
+        private set
+
+    fun requestEdit(musicIdea: MusicIdea, onAudioDataLoaded: suspend (ByteArray) -> Unit) {
+        viewModelScope.launch {
+            try {
+                val audioData = musicIdea.audioDataProvider()
+                onAudioDataLoaded(audioData)
+            } catch (e: Exception) {
+                println("Error loading audio data: ${e.message}")
+            }
+        }
+    }
+
     val availableTags by derivedStateOf {
         _musicIdeas.flatMap { it.metadata.tags }.distinct().sorted()
     }
@@ -103,10 +119,7 @@ class LibraryViewModel(
     }
 
     private var _selectedMusicIdeaId by mutableStateOf<String?>(null)
-    val selectedMusicIdeaId: String? get() = _selectedMusicIdeaId
-
     private var _playingMusicIdeaId by mutableStateOf<String?>(null)
-    val playingMusicIdeaId: String? get() = _playingMusicIdeaId
 
     fun selectMusicIdea(id: String) {
         _selectedMusicIdeaId = if (_selectedMusicIdeaId == id) null else id
@@ -174,6 +187,21 @@ class LibraryViewModel(
     fun dismissDeleteDialog() {
         showDeleteConfirmation = false
         musicIdeaToDelete = null
+    }
+
+    fun editMusicIdea(musicIdea: MusicIdea, onEdit: (MusicIdea) -> Unit) {
+        // Implement navigation to the edit screen
+        viewModelScope.launch {
+            // Load the audio data before editing
+            val audioData = musicIdea.audioDataProvider()
+            // Create a new MusicIdea instance with the loaded audio data
+            val ideaWithLoadedAudio = MusicIdea(
+                id = musicIdea.id,
+                metadata = musicIdea.metadata,
+                audioDataProvider = { audioData }
+            )
+            onEdit(ideaWithLoadedAudio)
+        }
     }
 
 }

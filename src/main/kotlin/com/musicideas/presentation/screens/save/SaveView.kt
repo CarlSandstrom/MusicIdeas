@@ -18,14 +18,15 @@ fun SaveView(viewModel: SaveViewModel) {
         modifier = Modifier.fillMaxSize().padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        Row { Text("Name")
-            OutlinedTextField(
-                value = viewModel.name,
-                onValueChange = { viewModel.name = it },
-                label = { Text("Name") },
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
+        Text(if (viewModel.isEditing) "Edit Music Idea" else "Save New Music Idea")
+
+        OutlinedTextField(
+            value = viewModel.name,
+            onValueChange = { viewModel.name = it },
+            label = { Text("Name") },
+            modifier = Modifier.fillMaxWidth()
+        )
+
         ComboBox(
             label = "Genre",
             options = Genre.entries.toList(),
@@ -62,10 +63,9 @@ fun SaveView(viewModel: SaveViewModel) {
         )
 
         Button(
-            onClick = { viewModel.save() },
-            // modifier = Modifier.align(LineHeightStyle.Alignment.)
+            onClick = { viewModel.save() }
         ) {
-            Text("Save")
+            Text(if (viewModel.isEditing) "Update" else "Save")
         }
     }
 }

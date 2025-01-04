@@ -9,13 +9,17 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.musicideas.domain.model.MusicIdea
 import com.musicideas.presentation.components.FilterPanel
 import com.musicideas.presentation.components.MusicIdeaItem
 import com.musicideas.presentation.components.TagCheckboxList
 import com.musicideas.presentation.components.TagFilterInput
 
 @Composable
-fun LibraryView(viewModel: LibraryViewModel) {
+fun LibraryView(
+    viewModel: LibraryViewModel,
+    onEdit: (MusicIdea) -> Unit = {}  // Add this parameter
+) {
     Column(
         modifier = Modifier.fillMaxSize().padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
@@ -67,7 +71,8 @@ fun LibraryView(viewModel: LibraryViewModel) {
                         onPlay = { viewModel.playMusicIdea(musicIdea.id) },
                         onDelete = { viewModel.promptDeleteMusicIdea(musicIdea.id) },
                         onStop = { viewModel.stopPlayback() },
-                        onShare = { viewModel.shareMusicIdea(musicIdea.id) }
+                        onShare = { viewModel.shareMusicIdea(musicIdea.id) },
+                        onEdit = { viewModel.editMusicIdea(musicIdea, onEdit) }  // Updated this line
                     )
                 }
             }

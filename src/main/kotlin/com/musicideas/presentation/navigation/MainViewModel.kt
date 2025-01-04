@@ -1,5 +1,6 @@
 package com.musicideas.presentation.navigation
 
+import com.musicideas.domain.model.MusicIdea
 import com.musicideas.domain.repository.AudioRepository
 import com.musicideas.domain.usecase.GetMusicIdeaUseCase
 import com.musicideas.domain.usecase.PlaybackMusicUseCase
@@ -36,7 +37,16 @@ class MainViewModel(
         return SettingsViewModel()
     }
 
-    fun createSaveViewModel(audioData: ByteArray, onSaveComplete: () -> Unit): SaveViewModel {
-        return SaveViewModel(audioData, saveMusicIdeaUseCase, onSaveComplete)
+    fun createSaveViewModel(
+        audioData: ByteArray,
+        existingMusicIdea: MusicIdea? = null,
+        onSaveComplete: () -> Unit
+    ): SaveViewModel {
+        return SaveViewModel(
+            audioData = audioData,
+            saveMusicIdeaUseCase = saveMusicIdeaUseCase,
+            existingMusicIdea = existingMusicIdea,
+            onSaveComplete = onSaveComplete
+        )
     }
 }
