@@ -1,38 +1,42 @@
 package com.musicideas.data.repository
 
-import com.musicideas.domain.repository.AudioRepository
+import com.musicideas.audio.playback.AudioPlayer
 import com.musicideas.audio.recording.AudioRecorder
-import com.musicideas.audio.recording.JavaSoundRecorder
+import com.musicideas.domain.repository.AudioRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 class AudioRepositoryImpl(
-    private val audioRecorder: AudioRecorder
+    private val recorder: AudioRecorder,
+    private val player: AudioPlayer
 ) : AudioRepository {
     override suspend fun startRecording(): Result<Unit> = withContext(Dispatchers.IO) {
         runCatching {
-            audioRecorder.startRecording()
+            println("Starting recording")
+            recorder.startRecording()
         }
     }
 
     override suspend fun stopRecording(): Result<ByteArray> = withContext(Dispatchers.IO) {
         runCatching {
-            audioRecorder.stopRecording()
-            (audioRecorder as? JavaSoundRecorder)?.getRecordedAudio() ?: ByteArray(0)
+            println("Stopping recording")
+            recorder.stopRecording()
         }
     }
 
     override suspend fun playAudio(audioData: ByteArray): Result<Unit> = withContext(Dispatchers.IO) {
         runCatching {
-            audioRecorder.startPlayback()
+            println("Playing audio: ${audioData.size} bytes")
+            player.play(audioData)
         }
     }
 
     override suspend fun stopPlayback(): Result<Unit> = withContext(Dispatchers.IO) {
         runCatching {
-            audioRecorder.stopPlayback()
+            println("Stopping playback")
+            player.stop()
         }
     }
 
-    override fun getInputLevel(): Float = audioRecorder.getInputLevel()
+    override fun getInputLevel(): Float = recorder.getInputLevel()
 }

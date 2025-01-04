@@ -28,7 +28,7 @@ fun CloudStorageView(viewModel: CloudStorageViewModel) {
             items(viewModel.musicIdeas) { musicIdea ->
                 MusicIdeaItem(
                     musicIdea = musicIdea,
-                    onUpload = { viewModel.uploadMusicIdea(it) }
+                    //onUpload = { viewModel.uploadMusicIdea(it) }
                 )
             }
         }

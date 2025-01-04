@@ -60,7 +60,15 @@ fun LibraryView(viewModel: LibraryViewModel) {
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 items(viewModel.filteredMusicIdeas) { musicIdea ->
-                    MusicIdeaItem(musicIdea = musicIdea)
+                    MusicIdeaItem(
+                        musicIdea = musicIdea,
+                        isSelected = musicIdea.id == viewModel.selectedMusicIdeaId,
+                        isPlaying = musicIdea.id == viewModel.playingMusicIdeaId,
+                        onSelect = { viewModel.selectMusicIdea(musicIdea.id) },
+                        onPlay = { viewModel.playMusicIdea(musicIdea.id) },
+                        onStop = { viewModel.stopPlayback() },
+                        onShare = { viewModel.shareMusicIdea(musicIdea.id) }
+                    )
                 }
             }
         }

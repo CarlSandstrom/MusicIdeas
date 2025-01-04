@@ -2,7 +2,7 @@ package com.musicideas.domain.usecase
 
 import com.musicideas.domain.model.*
 import com.musicideas.domain.repository.MusicIdeaRepository
-import java.util.UUID
+import java.util.*
 
 class SaveMusicIdeaUseCase(
     private val repository: MusicIdeaRepository
@@ -17,14 +17,14 @@ class SaveMusicIdeaUseCase(
     ): Result<Unit> {
         val musicIdea = MusicIdea(
             id = UUID.randomUUID().toString(),
-            audioData = audioData,
             metadata = MusicIdeaMetadata(
                 genre = genre,
                 instrument = instrument,
                 tempo = tempo,
                 ideaType = ideaType,
                 tags = tags
-            )
+            ),
+            audioDataProvider = { audioData } // Provide audio data directly when saving
         )
         return repository.save(musicIdea)
     }

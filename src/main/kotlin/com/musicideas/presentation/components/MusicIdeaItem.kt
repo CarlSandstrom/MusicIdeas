@@ -1,63 +1,123 @@
 package com.musicideas.presentation.components
 
+import androidx.compose.animation.*
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.hoverable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
-import androidx.compose.material.Card
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.filled.Stop
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.musicideas.domain.model.MusicIdea
 
-// presentation/components/MusicIdeaItem.kt
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun MusicIdeaItem(
     musicIdea: MusicIdea,
-    onUpload: ((MusicIdea) -> Unit)? = null
+    isSelected: Boolean = false,
+    onSelect: () -> Unit = {},
+    onPlay: () -> Unit = {},
+    onStop: () -> Unit = {},
+    onShare: () -> Unit = {},
+    isPlaying: Boolean = false
 ) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val isHovered by interactionSource.collectIsHoveredAsState()
+
+    val backgroundColor = when {
+        isSelected -> MaterialTheme.colorScheme.primaryContainer
+        isHovered -> MaterialTheme.colorScheme.surfaceVariant
+        else -> MaterialTheme.colorScheme.surface
+    }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp)
+            .clip(RoundedCornerShape(8.dp))
+            .background(backgroundColor)
+            .clickable { onSelect() }
+            .hoverable(interactionSource),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = if (isHovered || isSelected) 8.dp else 2.dp
+        )
     ) {
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
+            // Main content
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    "${musicIdea.metadata.ideaType} - ${musicIdea.metadata.instrument}",
-                    style = MaterialTheme.typography.bodyMedium
-                )
-                Text("${musicIdea.metadata.tempo} BPM")
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        "${musicIdea.metadata.ideaType} - ${musicIdea.metadata.instrument}",
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+
+                    Text(
+                        musicIdea.metadata.genre.toString(),
+                        style = MaterialTheme.typography.headlineSmall
+                    )
+
+                    Text(
+                        "Tempo: ${musicIdea.metadata.tempo} BPM",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+
+                // Controls shown when selected
+                AnimatedVisibility(
+                    visible = isSelected,
+                    enter = fadeIn() + expandHorizontally(),
+                    exit = fadeOut() + shrinkHorizontally()
+                ) {
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        IconButton(
+                            onClick = { if (isPlaying) onStop() else onPlay() }
+                        ) {
+                            Icon(
+                                if (isPlaying) Icons.Default.Stop else Icons.Default.PlayArrow,
+                                contentDescription = if (isPlaying) "Stop" else "Play"
+                            )
+                        }
+
+                        IconButton(onClick = onShare) {
+                            Icon(
+                                Icons.Default.Share,
+                                contentDescription = "Share"
+                            )
+                        }
+                    }
+                }
             }
 
-            Text(
-                musicIdea.metadata.genre.toString(),
-                style = MaterialTheme.typography.bodyMedium
-            )
-
-            if (!musicIdea.metadata.tags.isEmpty()) {
-                Row(
+            // Tags
+            if (musicIdea.metadata.tags.isNotEmpty()) {
+                FlowRow(
+                    modifier = Modifier.padding(top = 8.dp),
                     horizontalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
                     musicIdea.metadata.tags.forEach { tag ->
                         Chip(tag)
                     }
-                }
-            }
-
-            onUpload?.let { upload ->
-                Button(
-                    onClick = { upload(musicIdea) },
-                    // modifier = Modifier.align(LineHeightStyle.Alignment.Top)
-                ) {
-                    Text("Upload")
                 }
             }
         }
@@ -68,12 +128,13 @@ fun MusicIdeaItem(
 private fun Chip(text: String) {
     Surface(
         shape = RoundedCornerShape(16.dp),
-        // color = MaterialTheme.colorScheme. colors.primary.copy(alpha = 0.1f)
+        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
     ) {
         Text(
             text = text,
             modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-            style = MaterialTheme.typography.bodyMedium
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.primary
         )
     }
 }

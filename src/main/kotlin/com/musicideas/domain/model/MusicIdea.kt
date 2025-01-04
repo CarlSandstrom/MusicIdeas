@@ -3,8 +3,8 @@ package com.musicideas.domain.model
 
 data class MusicIdea(
     val id: String, // Added id for uniqueness
-    val audioData: ByteArray,
-    val metadata: MusicIdeaMetadata
+    val metadata: MusicIdeaMetadata,
+    val audioDataProvider : suspend () -> ByteArray // Added audioDataProvider for lazy loading
 )
 
 data class MusicIdeaMetadata(

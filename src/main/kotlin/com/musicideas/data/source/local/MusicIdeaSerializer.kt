@@ -2,8 +2,8 @@
 package com.musicideas.data.source.local
 
 import com.musicideas.domain.model.*
-import kotlinx.serialization.json.Json
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
 import java.io.File
 
 @Serializable
@@ -28,11 +28,14 @@ fun serializeMetadata(musicIdea: MusicIdea): String {
     return Json.encodeToString(MusicIdeaMetadataDto.serializer(), dto)
 }
 
-fun deserializeMusicIdea(id: String, audioFile: File, metadataFile: File): MusicIdea {
+fun deserializeMusicIdea(
+    id: String,
+    metadataFile: File,
+    audioDataProvider: suspend () -> ByteArray
+): MusicIdea {
     val metadata = Json.decodeFromString<MusicIdeaMetadataDto>(metadataFile.readText())
     return MusicIdea(
         id = id,
-        audioData = audioFile.readBytes(),
         metadata = MusicIdeaMetadata(
             genre = metadata.genre,
             instrument = metadata.instrument,
@@ -40,6 +43,7 @@ fun deserializeMusicIdea(id: String, audioFile: File, metadataFile: File): Music
             ideaType = metadata.ideaType,
             tags = metadata.tags,
             createdAt = metadata.createdAt
-        )
+        ),
+        audioDataProvider = audioDataProvider
     )
 }

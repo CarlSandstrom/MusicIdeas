@@ -3,6 +3,7 @@ package com.musicideas.data.source.local
 import com.musicideas.domain.model.MusicIdea
 import java.io.File
 
+
 class MusicIdeaLocalDataSourceImpl(
     private val baseDir: File
 ) : MusicIdeaLocalDataSource {
@@ -16,35 +17,45 @@ class MusicIdeaLocalDataSourceImpl(
 
     override suspend fun saveMusicIdea(musicIdea: MusicIdea) {
         val audioFile = File(audioDir, "${musicIdea.id}.raw")
-        audioFile.writeBytes(musicIdea.audioData)
+        val audioData = musicIdea.audioDataProvider() // Get audio data only when saving
+        audioFile.writeBytes(audioData)
+        println("Saved audio file: ${audioFile.absolutePath} with size: ${audioData.size}")
 
-        // For now storing metadata as separate files
-        // In real app would use a proper database
         val metadataFile = File(metadataDir, "${musicIdea.id}.json")
         metadataFile.writeText(serializeMetadata(musicIdea))
     }
 
     override suspend fun getMusicIdea(id: String): MusicIdea? {
-        val audioFile = File(audioDir, "$id.raw")
         val metadataFile = File(metadataDir, "$id.json")
+        if (!metadataFile.exists()) return null
 
-        if (!audioFile.exists() || !metadataFile.exists()) return null
-
-        return deserializeMusicIdea(id, audioFile, metadataFile)
+        return deserializeMusicIdea(id, metadataFile) {
+            // Lazy loading function for audio data
+            val audioFile = File(audioDir, "$id.raw")
+            if (audioFile.exists()) {
+                audioFile.readBytes()
+            } else {
+                ByteArray(0)
+            }
+        }
     }
 
     override suspend fun getAllMusicIdeas(): List<MusicIdea> {
         return metadataDir.listFiles()?.mapNotNull { metadataFile ->
             val id = metadataFile.nameWithoutExtension
-            val audioFile = File(audioDir, "$id.raw")
-            if (audioFile.exists()) {
-                deserializeMusicIdea(id, audioFile, metadataFile)
-            } else null
+            deserializeMusicIdea(id, metadataFile) {
+                // Lazy loading function for audio data
+                val audioFile = File(audioDir, "$id.raw")
+                if (audioFile.exists()) {
+                    audioFile.readBytes()
+                } else {
+                    ByteArray(0)
+                }
+            }
         } ?: emptyList()
     }
 
     override suspend fun deleteMusicIdea(id: String) {
-        File(audioDir, "$id.wav").delete()
-        File(metadataDir, "$id.json").delete()
+        TODO("Not yet implemented")
     }
 }

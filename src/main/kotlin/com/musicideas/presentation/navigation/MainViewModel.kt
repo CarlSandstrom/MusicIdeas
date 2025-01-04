@@ -25,7 +25,7 @@ class MainViewModel(
     }
 
     fun createLibraryViewModel(): LibraryViewModel {
-        return LibraryViewModel(getMusicIdeaUseCase)
+        return LibraryViewModel(getMusicIdeaUseCase, playbackMusicUseCase)
     }
 
     fun createCloudStorageViewModel(): CloudStorageViewModel {

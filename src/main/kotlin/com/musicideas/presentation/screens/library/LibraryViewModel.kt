@@ -9,6 +9,7 @@ import com.musicideas.domain.model.IdeaType
 import com.musicideas.domain.model.Instrument
 import com.musicideas.domain.model.MusicIdea
 import com.musicideas.domain.usecase.GetMusicIdeaUseCase
+import com.musicideas.domain.usecase.PlaybackMusicUseCase
 import com.musicideas.presentation.common.ViewModel
 import kotlinx.coroutines.launch
 
@@ -22,8 +23,10 @@ data class FilterState(
 )
 
 class LibraryViewModel(
-    private val getMusicIdeaUseCase: GetMusicIdeaUseCase
+    private val getMusicIdeaUseCase: GetMusicIdeaUseCase,
+    private val playbackMusicUseCase: PlaybackMusicUseCase // Add this dependency
 ) : ViewModel() {
+
     private var _musicIdeas by mutableStateOf<List<MusicIdea>>(emptyList())
     private var _filterState by mutableStateOf(FilterState())
 
@@ -92,5 +95,57 @@ class LibraryViewModel(
 
     fun updateFilter(update: FilterState.() -> FilterState) {
         _filterState = _filterState.update()
+    }
+
+    private var _selectedMusicIdeaId by mutableStateOf<String?>(null)
+    val selectedMusicIdeaId: String? get() = _selectedMusicIdeaId
+
+    private var _playingMusicIdeaId by mutableStateOf<String?>(null)
+    val playingMusicIdeaId: String? get() = _playingMusicIdeaId
+
+    fun selectMusicIdea(id: String) {
+        _selectedMusicIdeaId = if (_selectedMusicIdeaId == id) null else id
+    }
+
+    fun playMusicIdea(id: String) {
+        viewModelScope.launch {
+            _playingMusicIdeaId = id
+            val musicIdea = musicIdeas.find { it.id == id }
+            if (musicIdea != null) {
+                try {
+                    val audioData = musicIdea.audioDataProvider() // Load audio data only when needed
+                    if (audioData.isEmpty()) {
+                        println("Audio data is empty for music idea: $id")
+                        return@launch
+                    }
+                    println("Playing music idea: $id with audio size: ${audioData.size}")
+                    playbackMusicUseCase.startPlayback(audioData)
+                        .onSuccess {
+                            println("Successfully started playback")
+                        }
+                        .onFailure { error ->
+                            println("Failed to start playback: ${error.message}")
+                            _playingMusicIdeaId = null
+                        }
+                } catch (e: Exception) {
+                    println("Error loading audio data: ${e.message}")
+                    _playingMusicIdeaId = null
+                }
+            } else {
+                println("Music idea not found: $id")
+            }
+        }
+    }
+
+    fun stopPlayback() {
+        viewModelScope.launch {
+            playbackMusicUseCase.stopPlayback()
+            _playingMusicIdeaId = null
+        }
+    }
+
+    fun shareMusicIdea(id: String) {
+        // Implement sharing functionality
+        // This could open a dialog or handle the sharing process
     }
 }

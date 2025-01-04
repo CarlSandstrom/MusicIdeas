@@ -1,9 +1,11 @@
 package com.musicideas.di
 
+import com.musicideas.audio.playback.AudioPlayer
+import com.musicideas.audio.playback.JavaSoundPlayer
 import com.musicideas.audio.recording.AudioRecorder
+import com.musicideas.audio.recording.JavaSoundRecorder
 import com.musicideas.data.repository.AudioRepositoryImpl
 import com.musicideas.data.repository.MusicIdeaRepositoryImpl
-import com.musicideas.data.source.local.AudioRecorderImpl
 import com.musicideas.data.source.local.MusicIdeaLocalDataSource
 import com.musicideas.data.source.local.MusicIdeaLocalDataSourceImpl
 import com.musicideas.domain.repository.AudioRepository
@@ -23,10 +25,11 @@ val appModule = module {
             baseDir = File(System.getProperty("user.home"), "MusicIdeas")
         )
     }
-    single<AudioRecorder> { AudioRecorderImpl() }
+    single<AudioRecorder> { JavaSoundRecorder() }
+    single<AudioPlayer> { JavaSoundPlayer() }
+    single<AudioRepository> { AudioRepositoryImpl(get(), get()) }
 
     // Repositories
-    single<AudioRepository> { AudioRepositoryImpl(get()) }
     single<MusicIdeaRepository> { MusicIdeaRepositoryImpl(get()) }
 
     // Use Cases
