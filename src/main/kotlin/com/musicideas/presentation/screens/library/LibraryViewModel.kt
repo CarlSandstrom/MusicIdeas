@@ -154,14 +154,6 @@ class LibraryViewModel(
         // This could open a dialog or handle the sharing process
     }
 
-    fun deleteMusicIdea(id: String) {
-        viewModelScope.launch {
-            getMusicIdeaUseCase.delete(id).onSuccess {
-                loadMusicIdeas()
-            }
-        }
-    }
-
     fun promptDeleteMusicIdea(id: String) {
         musicIdeaToDelete = id
         showDeleteConfirmation = true
@@ -183,4 +175,5 @@ class LibraryViewModel(
         showDeleteConfirmation = false
         musicIdeaToDelete = null
     }
+
 }

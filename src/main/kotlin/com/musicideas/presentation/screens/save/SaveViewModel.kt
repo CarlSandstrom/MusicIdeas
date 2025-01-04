@@ -1,16 +1,21 @@
 package com.musicideas.presentation.screens.save
 
-import androidx.compose.runtime.*
-import kotlinx.coroutines.launch
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import com.musicideas.domain.model.Genre
+import com.musicideas.domain.model.IdeaType
+import com.musicideas.domain.model.Instrument
 import com.musicideas.domain.usecase.SaveMusicIdeaUseCase
-import com.musicideas.domain.model.*
 import com.musicideas.presentation.common.ViewModel
+import kotlinx.coroutines.launch
 
 class SaveViewModel(
     private val audioData: ByteArray,
     private val saveMusicIdeaUseCase: SaveMusicIdeaUseCase,
     private val onSaveComplete: () -> Unit
 ) : ViewModel() {
+    var name by mutableStateOf("")
     var genre by mutableStateOf(Genre.ROCK)
     var instrument by mutableStateOf(Instrument.GUITAR)
     var tempo by mutableStateOf(120)
@@ -30,6 +35,7 @@ class SaveViewModel(
     fun save() {
         viewModelScope.launch {
             saveMusicIdeaUseCase(
+                name = name,
                 audioData = audioData,
                 genre = genre,
                 instrument = instrument,

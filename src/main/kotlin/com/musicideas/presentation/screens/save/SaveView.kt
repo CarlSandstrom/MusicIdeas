@@ -18,6 +18,14 @@ fun SaveView(viewModel: SaveViewModel) {
         modifier = Modifier.fillMaxSize().padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
+        Row { Text("Name")
+            OutlinedTextField(
+                value = viewModel.name,
+                onValueChange = { viewModel.name = it },
+                label = { Text("Name") },
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
         ComboBox(
             label = "Genre",
             options = Genre.entries.toList(),

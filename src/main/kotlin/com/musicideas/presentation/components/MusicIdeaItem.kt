@@ -67,15 +67,13 @@ fun MusicIdeaItem(
             ) {
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        "${musicIdea.metadata.ideaType} - ${musicIdea.metadata.instrument}",
-                        style = MaterialTheme.typography.bodyLarge
-                    )
-
-                    Text(
-                        musicIdea.metadata.genre.toString(),
+                        musicIdea.metadata.name,
                         style = MaterialTheme.typography.headlineSmall
                     )
-
+                    Text(
+                        "${musicIdea.metadata.genre}, ${musicIdea.metadata.ideaType}, ${musicIdea.metadata.instrument}",
+                        style = MaterialTheme.typography.bodySmall
+                    )
                     Text(
                         "Tempo: ${musicIdea.metadata.tempo} BPM",
                         style = MaterialTheme.typography.bodyMedium

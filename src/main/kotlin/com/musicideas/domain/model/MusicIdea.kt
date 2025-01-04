@@ -8,6 +8,7 @@ data class MusicIdea(
 )
 
 data class MusicIdeaMetadata(
+    val name: String,
     val genre: Genre,
     val instrument: Instrument,
     val tempo: Int,
@@ -17,13 +18,13 @@ data class MusicIdeaMetadata(
 )
 
 enum class Genre {
-    ROCK, METAL, JAZZ, BLUES, FOLK, CLASSICAL, POP, ELECTRONIC, OTHER
+    ROCK, METAL, JAZZ, BLUES, FOLK, CLASSICAL, POP, ELECTRONIC, OTHER, UNKNOWN
 }
 
 enum class Instrument {
-    GUITAR, BASS, DRUMS, PIANO, SYNTHESIZER, VOCALS, OTHER
+    GUITAR, BASS, DRUMS, PIANO, SYNTHESIZER, VOCALS, OTHER, UNKNOWN
 }
 
 enum class IdeaType {
-    RIFF, CHORD_PROGRESSION, SOLO, MELODY, BASSLINE, DRUM_PATTERN, OTHER
+    RIFF, CHORD_PROGRESSION, SOLO, MELODY, BASSLINE, DRUM_PATTERN, OTHER, UNKNOWN
 }

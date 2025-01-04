@@ -8,6 +8,7 @@ class SaveMusicIdeaUseCase(
     private val repository: MusicIdeaRepository
 ) {
     suspend operator fun invoke(
+        name: String,
         audioData: ByteArray,
         genre: Genre,
         instrument: Instrument,
@@ -18,6 +19,7 @@ class SaveMusicIdeaUseCase(
         val musicIdea = MusicIdea(
             id = UUID.randomUUID().toString(),
             metadata = MusicIdeaMetadata(
+                name = name,
                 genre = genre,
                 instrument = instrument,
                 tempo = tempo,
