@@ -9,6 +9,7 @@ import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Stop
@@ -31,6 +32,7 @@ fun MusicIdeaItem(
     onPlay: () -> Unit = {},
     onStop: () -> Unit = {},
     onShare: () -> Unit = {},
+    onDelete: () -> Unit = {},
     isPlaying: Boolean = false
 ) {
     val interactionSource = remember { MutableInteractionSource() }
@@ -103,6 +105,14 @@ fun MusicIdeaItem(
                             Icon(
                                 Icons.Default.Share,
                                 contentDescription = "Share"
+                            )
+                        }
+
+                        // Add a button to delete the music idea
+                        IconButton(onClick = onDelete) {
+                            Icon(
+                                Icons.Default.Delete,
+                                contentDescription = "Delete"
                             )
                         }
                     }

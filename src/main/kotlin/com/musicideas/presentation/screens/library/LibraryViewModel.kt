@@ -27,6 +27,11 @@ class LibraryViewModel(
     private val playbackMusicUseCase: PlaybackMusicUseCase // Add this dependency
 ) : ViewModel() {
 
+    var showDeleteConfirmation by mutableStateOf(false)
+        private set
+    var musicIdeaToDelete by mutableStateOf<String?>(null)
+        private set
+
     private var _musicIdeas by mutableStateOf<List<MusicIdea>>(emptyList())
     private var _filterState by mutableStateOf(FilterState())
 
@@ -147,5 +152,35 @@ class LibraryViewModel(
     fun shareMusicIdea(id: String) {
         // Implement sharing functionality
         // This could open a dialog or handle the sharing process
+    }
+
+    fun deleteMusicIdea(id: String) {
+        viewModelScope.launch {
+            getMusicIdeaUseCase.delete(id).onSuccess {
+                loadMusicIdeas()
+            }
+        }
+    }
+
+    fun promptDeleteMusicIdea(id: String) {
+        musicIdeaToDelete = id
+        showDeleteConfirmation = true
+    }
+
+    fun confirmDelete() {
+        musicIdeaToDelete?.let { id ->
+            viewModelScope.launch {
+                getMusicIdeaUseCase.delete(id).onSuccess {
+                    loadMusicIdeas()
+                }
+            }
+        }
+        showDeleteConfirmation = false
+        musicIdeaToDelete = null
+    }
+
+    fun dismissDeleteDialog() {
+        showDeleteConfirmation = false
+        musicIdeaToDelete = null
     }
 }

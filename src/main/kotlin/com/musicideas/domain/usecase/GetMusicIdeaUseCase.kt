@@ -11,4 +11,7 @@ class GetMusicIdeaUseCase(
 
     suspend fun getAll(): Result<List<MusicIdea>> =
         repository.getAll()
+
+    suspend fun delete(id: String): Result<Unit> =
+        repository.delete(id)
 }

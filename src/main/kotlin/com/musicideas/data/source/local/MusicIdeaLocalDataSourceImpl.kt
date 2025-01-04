@@ -56,6 +56,14 @@ class MusicIdeaLocalDataSourceImpl(
     }
 
     override suspend fun deleteMusicIdea(id: String) {
-        TODO("Not yet implemented")
+
+        val audioFile = File(audioDir, "$id.raw")
+        if (audioFile.exists()) {
+            audioFile.delete()
+        }
+        val metadataFile = File(metadataDir, "$id.json")
+        if (metadataFile.exists()) {
+            metadataFile.delete()
+        }
     }
 }

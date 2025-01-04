@@ -3,8 +3,9 @@ package com.musicideas.presentation.screens.library
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -19,8 +20,6 @@ fun LibraryView(viewModel: LibraryViewModel) {
         modifier = Modifier.fillMaxSize().padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        Text("Your Music Ideas", style = MaterialTheme.typography.headlineMedium)
-
         Row(
             modifier = Modifier.fillMaxWidth().weight(1f),
             horizontalArrangement = Arrangement.spacedBy(16.dp)
@@ -66,11 +65,30 @@ fun LibraryView(viewModel: LibraryViewModel) {
                         isPlaying = musicIdea.id == viewModel.playingMusicIdeaId,
                         onSelect = { viewModel.selectMusicIdea(musicIdea.id) },
                         onPlay = { viewModel.playMusicIdea(musicIdea.id) },
+                        onDelete = { viewModel.promptDeleteMusicIdea(musicIdea.id) },
                         onStop = { viewModel.stopPlayback() },
                         onShare = { viewModel.shareMusicIdea(musicIdea.id) }
                     )
                 }
             }
         }
+    }
+
+    if (viewModel.showDeleteConfirmation) {
+        AlertDialog(
+            onDismissRequest = { viewModel.dismissDeleteDialog() },
+            title = { Text("Delete Music Idea") },
+            text = { Text("Are you sure you want to delete this music idea? This action cannot be undone.") },
+            confirmButton = {
+                TextButton(
+                    onClick = { viewModel.confirmDelete() }
+                ) { Text("Delete") }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = { viewModel.dismissDeleteDialog() }
+                ) { Text("Cancel") }
+            }
+        )
     }
 }
