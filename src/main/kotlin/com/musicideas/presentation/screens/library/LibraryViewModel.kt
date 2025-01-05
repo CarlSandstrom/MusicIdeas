@@ -40,19 +40,6 @@ class LibraryViewModel(
 
     var selectedMusicIdeaId by mutableStateOf<String?>(null)
         private set
-    var playingMusicIdeaId by mutableStateOf<String?>(null)
-        private set
-
-    fun requestEdit(musicIdea: MusicIdea, onAudioDataLoaded: suspend (ByteArray) -> Unit) {
-        viewModelScope.launch {
-            try {
-                val audioData = musicIdea.audioDataProvider()
-                onAudioDataLoaded(audioData)
-            } catch (e: Exception) {
-                println("Error loading audio data: ${e.message}")
-            }
-        }
-    }
 
     val availableTags by derivedStateOf {
         _musicIdeas.flatMap { it.metadata.tags }.distinct().sorted()
@@ -119,27 +106,49 @@ class LibraryViewModel(
     }
 
     private var _selectedMusicIdeaId by mutableStateOf<String?>(null)
-    private var _playingMusicIdeaId by mutableStateOf<String?>(null)
 
     fun selectMusicIdea(id: String) {
         _selectedMusicIdeaId = if (_selectedMusicIdeaId == id) null else id
     }
 
+    private var _playingMusicIdeaId by mutableStateOf<String?>(null)
+    val playingMusicIdeaId: String?
+        get() {
+            println("Getting playingMusicIdeaId: $_playingMusicIdeaId")
+            return _playingMusicIdeaId
+        }
+
     fun playMusicIdea(id: String) {
         viewModelScope.launch {
-            _playingMusicIdeaId = id
+            println("Starting playback for id: $id")
+            // If already playing this idea, stop it
+            if (_playingMusicIdeaId == id) {
+                println("Already playing this idea, stopping")
+                stopPlayback()
+                return@launch
+            }
+
+            // If playing something else, stop it first
+            if (_playingMusicIdeaId != null) {
+                println("Stopping previous playback")
+                stopPlayback()
+            }
+
             val musicIdea = musicIdeas.find { it.id == id }
             if (musicIdea != null) {
                 try {
-                    val audioData = musicIdea.audioDataProvider() // Load audio data only when needed
+                    val audioData = musicIdea.audioDataProvider()
                     if (audioData.isEmpty()) {
                         println("Audio data is empty for music idea: $id")
                         return@launch
                     }
-                    println("Playing music idea: $id with audio size: ${audioData.size}")
+
+                    println("Setting playingMusicIdeaId to: $id")
+                    _playingMusicIdeaId = id
+
                     playbackMusicUseCase.startPlayback(audioData)
                         .onSuccess {
-                            println("Successfully started playback")
+                            println("Successfully started playback for id: $id")
                         }
                         .onFailure { error ->
                             println("Failed to start playback: ${error.message}")
@@ -149,16 +158,16 @@ class LibraryViewModel(
                     println("Error loading audio data: ${e.message}")
                     _playingMusicIdeaId = null
                 }
-            } else {
-                println("Music idea not found: $id")
             }
         }
     }
 
     fun stopPlayback() {
         viewModelScope.launch {
+            println("Stopping playback, current id: $_playingMusicIdeaId")
             playbackMusicUseCase.stopPlayback()
             _playingMusicIdeaId = null
+            println("Playback stopped, id cleared")
         }
     }
 

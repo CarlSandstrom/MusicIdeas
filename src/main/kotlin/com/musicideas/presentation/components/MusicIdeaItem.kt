@@ -57,7 +57,6 @@ fun MusicIdeaItem(
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
-            // Main content
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -78,7 +77,6 @@ fun MusicIdeaItem(
                     )
                 }
 
-                // Controls shown when selected
                 AnimatedVisibility(
                     visible = isHovered,
                     enter = fadeIn() + expandHorizontally(),
@@ -88,32 +86,47 @@ fun MusicIdeaItem(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
+                        // Play/Stop button with icon and color change
                         IconButton(
-                            onClick = { if (isPlaying) onStop() else onPlay() }
+                            onClick = {
+                                println("Play/Stop button clicked for ${musicIdea.id}, current isPlaying: $isPlaying")
+                                if (isPlaying)
+                                    onStop()
+                                else
+                                    onPlay()
+                            }
                         ) {
                             Icon(
-                                if (isPlaying) Icons.Default.Stop else Icons.Default.PlayArrow,
-                                contentDescription = if (isPlaying) "Stop" else "Play"
+                                imageVector = if (isPlaying) Icons.Default.Stop else Icons.Default.PlayArrow,
+                                contentDescription = if (isPlaying) "Stop" else "Play",
+                                tint = if (isPlaying) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
                             )
                         }
 
-                        IconButton(onClick = onShare) {
+                        IconButton(
+                            onClick = onShare,
+                            enabled = !isPlaying
+                        ) {
                             Icon(
                                 Icons.Default.Share,
                                 contentDescription = "Share"
                             )
                         }
 
-                        // Add a button to delete the music idea
-                        IconButton(onClick = onDelete) {
+                        IconButton(
+                            onClick = onDelete,
+                            enabled = !isPlaying
+                        ) {
                             Icon(
                                 Icons.Default.Delete,
                                 contentDescription = "Delete"
                             )
                         }
 
-                        // Add a button to edit the music idea
-                        IconButton(onClick = onEdit) {
+                        IconButton(
+                            onClick = onEdit,
+                            enabled = !isPlaying
+                        ) {
                             Icon(
                                 Icons.Default.Edit,
                                 contentDescription = "Edit"
@@ -123,7 +136,6 @@ fun MusicIdeaItem(
                 }
             }
 
-            // Tags
             if (musicIdea.metadata.tags.isNotEmpty()) {
                 FlowRow(
                     modifier = Modifier.padding(top = 8.dp),
