@@ -10,6 +10,7 @@ import com.musicideas.domain.model.MusicIdea
 import com.musicideas.domain.usecase.SaveMusicIdeaUseCase
 import com.musicideas.presentation.common.ViewModel
 import kotlinx.coroutines.launch
+import java.util.*
 
 class SaveViewModel(
     private val audioData: ByteArray,
@@ -17,7 +18,7 @@ class SaveViewModel(
     private val onSaveComplete: () -> Unit,
     existingMusicIdea: MusicIdea? = null
 ) : ViewModel() {
-    var id by mutableStateOf(existingMusicIdea?.id ?: "")
+    var id by mutableStateOf(existingMusicIdea?.id ?: UUID.randomUUID().toString())
     var name by mutableStateOf(existingMusicIdea?.metadata?.name ?: "")
     var genre by mutableStateOf(existingMusicIdea?.metadata?.genre ?: Genre.ROCK)
     var instrument by mutableStateOf(existingMusicIdea?.metadata?.instrument ?: Instrument.GUITAR)

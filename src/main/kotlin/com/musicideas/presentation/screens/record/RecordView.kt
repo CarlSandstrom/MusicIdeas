@@ -19,10 +19,15 @@ fun RecordView(viewModel: RecordViewModel, onSave: (ByteArray) -> Unit) {
     ) {
         Row(modifier = Modifier.weight(1f)) {
             Box(modifier = Modifier.weight(1f).fillMaxHeight()) {
-                viewModel.audioData?.let { audioData ->
+                if (viewModel.audioData != null) {
                     WaveformView(
-                        audioData = audioData,
+                        audioData = viewModel.audioData!!,
                         currentTimeMs = viewModel.currentTimeMs
+                    )
+                } else {
+                    WaveformView(
+                        audioData = ByteArray(0),
+                        currentTimeMs = 0f
                     )
                 }
             }

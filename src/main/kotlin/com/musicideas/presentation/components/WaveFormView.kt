@@ -2,13 +2,18 @@
 package com.musicideas.presentation.components
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.unit.dp
 
 @Composable
 fun WaveformView(
@@ -16,20 +21,27 @@ fun WaveformView(
     currentTimeMs: Float,
     modifier: Modifier = Modifier
 ) {
-    Canvas(modifier = modifier.fillMaxSize()) {
-        val samplesPerPixel = (audioData.size / size.width).toInt().coerceAtLeast(2)
-        val amplitudes = getAmplitudes(audioData, samplesPerPixel)
+    Box (
+        modifier = Modifier
+            .fillMaxSize()
+            .border(1.dp, Color.Gray, RoundedCornerShape(4.dp))
+            .padding(4.dp)
+    ) {
+        Canvas(modifier = modifier.fillMaxSize()) {
+            val samplesPerPixel = (audioData.size / size.width).toInt().coerceAtLeast(2)
+            val amplitudes = getAmplitudes(audioData, samplesPerPixel)
 
-        drawWaveform(amplitudes, Color.Blue)
+            drawWaveform(amplitudes, Color.Blue)
 
-        val playheadX = (currentTimeMs / audioData.size * size.width)
-        if (playheadX in 0f..size.width) {
-            drawLine(
-                Color.Red,
-                Offset(playheadX, 0f),
-                Offset(playheadX, size.height),
-                strokeWidth = 2f
-            )
+            val playheadX = (currentTimeMs / audioData.size * size.width)
+            if (playheadX in 0f..size.width) {
+                drawLine(
+                    Color.Red,
+                    Offset(playheadX, 0f),
+                    Offset(playheadX, size.height),
+                    strokeWidth = 2f
+                )
+            }
         }
     }
 }
@@ -40,12 +52,14 @@ private fun getAmplitudes(audioData: ByteArray, samplesPerPixel: Int): List<Floa
         .map { chunk ->
             chunk
                 .chunked(2)
-                .maxOfOrNull { bytes ->
+                .map { bytes ->
                     if (bytes.size >= 2) {
                         val sample = (bytes[1].toInt() shl 8) or (bytes[0].toInt() and 0xFF)
                         sample / 32768f
                     } else 0f
-                } ?: 0f
+                }
+                .average()
+                .toFloat()
         }.toList()
 }
 
