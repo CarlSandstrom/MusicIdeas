@@ -5,5 +5,6 @@ interface AudioRepository {
     suspend fun stopRecording(): Result<ByteArray>
     suspend fun playAudio(audioData: ByteArray): Result<Unit>
     suspend fun stopPlayback(): Result<Unit>
+
     fun getInputLevel(): Float
 }

@@ -2,10 +2,7 @@ package com.musicideas.presentation.navigation
 
 import com.musicideas.domain.model.MusicIdea
 import com.musicideas.domain.repository.AudioRepository
-import com.musicideas.domain.usecase.GetMusicIdeaUseCase
-import com.musicideas.domain.usecase.PlaybackMusicUseCase
-import com.musicideas.domain.usecase.RecordMusicUseCase
-import com.musicideas.domain.usecase.SaveMusicIdeaUseCase
+import com.musicideas.domain.repository.MusicIdeaRepository
 import com.musicideas.presentation.common.ViewModel
 import com.musicideas.presentation.screens.cloudstorage.CloudStorageViewModel
 import com.musicideas.presentation.screens.library.LibraryViewModel
@@ -14,19 +11,16 @@ import com.musicideas.presentation.screens.save.SaveViewModel
 import com.musicideas.presentation.screens.settings.SettingsViewModel
 
 class MainViewModel(
-    private val recordMusicUseCase: RecordMusicUseCase,
-    private val playbackMusicUseCase: PlaybackMusicUseCase,
-    private val saveMusicIdeaUseCase: SaveMusicIdeaUseCase,
-    private val getMusicIdeaUseCase: GetMusicIdeaUseCase,
+    private val musicIdeaRepository: MusicIdeaRepository,
     private val audioRepository: AudioRepository
 ) : ViewModel() {
 
     fun createRecordViewModel(): RecordViewModel {
-        return RecordViewModel(recordMusicUseCase, playbackMusicUseCase, audioRepository)
+        return RecordViewModel(audioRepository)
     }
 
     fun createLibraryViewModel(): LibraryViewModel {
-        return LibraryViewModel(getMusicIdeaUseCase, playbackMusicUseCase)
+        return LibraryViewModel(musicIdeaRepository, audioRepository)
     }
 
     fun createCloudStorageViewModel(): CloudStorageViewModel {
@@ -44,7 +38,7 @@ class MainViewModel(
     ): SaveViewModel {
         return SaveViewModel(
             audioData = audioData,
-            saveMusicIdeaUseCase = saveMusicIdeaUseCase,
+            repository = musicIdeaRepository,
             existingMusicIdea = existingMusicIdea,
             onSaveComplete = onSaveComplete
         )

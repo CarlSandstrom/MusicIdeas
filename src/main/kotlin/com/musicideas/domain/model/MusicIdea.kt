@@ -1,11 +1,40 @@
 // domain/model/MusicIdea.kt
 package com.musicideas.domain.model
 
+import java.util.*
+
 data class MusicIdea(
-    val id: String, // Added id for uniqueness
+    val id: String,
     val metadata: MusicIdeaMetadata,
-    val audioDataProvider : suspend () -> ByteArray // Added audioDataProvider for lazy loading
-)
+    val audioDataProvider: suspend () -> ByteArray
+) {
+    companion object {
+        fun create(
+            name: String,
+            audioData: ByteArray,
+            genre: Genre,
+            instrument: Instrument,
+            tempo: Int,
+            ideaType: IdeaType,
+            tags: List<String>,
+            existingId: String? = null
+        ): MusicIdea {
+            return MusicIdea(
+                id = existingId ?: UUID.randomUUID().toString(),
+                metadata = MusicIdeaMetadata(
+                    name = name,
+                    genre = genre,
+                    instrument = instrument,
+                    tempo = tempo,
+                    ideaType = ideaType,
+                    tags = tags,
+                    createdAt = System.currentTimeMillis()
+                ),
+                audioDataProvider = { audioData }
+            )
+        }
+    }
+}
 
 data class MusicIdeaMetadata(
     val name: String,

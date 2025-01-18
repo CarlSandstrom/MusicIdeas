@@ -7,14 +7,14 @@ import com.musicideas.domain.model.Genre
 import com.musicideas.domain.model.IdeaType
 import com.musicideas.domain.model.Instrument
 import com.musicideas.domain.model.MusicIdea
-import com.musicideas.domain.usecase.SaveMusicIdeaUseCase
+import com.musicideas.domain.repository.MusicIdeaRepository
 import com.musicideas.presentation.common.ViewModel
 import kotlinx.coroutines.launch
 import java.util.*
 
 class SaveViewModel(
     private val audioData: ByteArray,
-    private val saveMusicIdeaUseCase: SaveMusicIdeaUseCase,
+    private val repository: MusicIdeaRepository,
     private val onSaveComplete: () -> Unit,
     existingMusicIdea: MusicIdea? = null
 ) : ViewModel() {
@@ -40,7 +40,7 @@ class SaveViewModel(
 
     fun save() {
         viewModelScope.launch {
-            saveMusicIdeaUseCase(
+            val musicIdea = MusicIdea.create(
                 name = name,
                 audioData = audioData,
                 genre = genre,
@@ -49,7 +49,8 @@ class SaveViewModel(
                 ideaType = ideaType,
                 tags = customTags.split(",").map { it.trim() }.filter { it.isNotEmpty() },
                 existingId = id
-            ).onSuccess {
+            )
+            repository.save(musicIdea).onSuccess {
                 onSaveComplete()
             }
         }

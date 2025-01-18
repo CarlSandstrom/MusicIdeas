@@ -4,14 +4,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.musicideas.domain.repository.AudioRepository
-import com.musicideas.domain.usecase.PlaybackMusicUseCase
-import com.musicideas.domain.usecase.RecordMusicUseCase
 import com.musicideas.presentation.common.ViewModel
 import kotlinx.coroutines.launch
 
 class RecordViewModel(
-    private val recordMusicUseCase: RecordMusicUseCase,
-    private val playbackMusicUseCase: PlaybackMusicUseCase,
     private val audioRepository: AudioRepository
 ) : ViewModel() {
     var isRecording by mutableStateOf(false)
@@ -28,7 +24,7 @@ class RecordViewModel(
 
     fun startRecording() {
         viewModelScope.launch {
-            recordMusicUseCase.startRecording().onSuccess {
+            audioRepository.startRecording().onSuccess {
                 isRecording = true
             }
         }
@@ -36,7 +32,7 @@ class RecordViewModel(
 
     fun stopRecording() {
         viewModelScope.launch {
-            recordMusicUseCase.stopRecording().onSuccess { audio ->
+            audioRepository.stopRecording().onSuccess { audio ->
                 audioData = audio
                 isRecording = false
             }
@@ -46,7 +42,7 @@ class RecordViewModel(
     fun startPlayback() {
         viewModelScope.launch {
             audioData?.let { audio ->
-                playbackMusicUseCase.startPlayback(audio)
+                audioRepository.playAudio(audio)
                 isPlaying = true
             }
         }
@@ -54,7 +50,7 @@ class RecordViewModel(
 
     fun stopPlayback() {
         viewModelScope.launch {
-            playbackMusicUseCase.stopPlayback()
+            audioRepository.stopPlayback()
             isPlaying = false
         }
     }

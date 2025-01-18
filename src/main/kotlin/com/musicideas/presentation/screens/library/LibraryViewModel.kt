@@ -8,8 +8,8 @@ import com.musicideas.domain.model.Genre
 import com.musicideas.domain.model.IdeaType
 import com.musicideas.domain.model.Instrument
 import com.musicideas.domain.model.MusicIdea
-import com.musicideas.domain.usecase.GetMusicIdeaUseCase
-import com.musicideas.domain.usecase.PlaybackMusicUseCase
+import com.musicideas.domain.repository.AudioRepository
+import com.musicideas.domain.repository.MusicIdeaRepository
 import com.musicideas.presentation.common.ViewModel
 import kotlinx.coroutines.launch
 
@@ -23,13 +23,13 @@ data class FilterState(
 )
 
 class LibraryViewModel(
-    private val getMusicIdeaUseCase: GetMusicIdeaUseCase,
-    private val playbackMusicUseCase: PlaybackMusicUseCase // Add this dependency
+    private val musicIdeaRepository: MusicIdeaRepository,
+    private val audioRepository: AudioRepository
 ) : ViewModel() {
 
     var showDeleteConfirmation by mutableStateOf(false)
         private set
-    var musicIdeaToDelete by mutableStateOf<String?>(null)
+    private var musicIdeaToDelete by mutableStateOf<String?>(null)
         private set
 
     private var _musicIdeas by mutableStateOf<List<MusicIdea>>(emptyList())
@@ -95,7 +95,7 @@ class LibraryViewModel(
 
     private fun loadMusicIdeas() {
         viewModelScope.launch {
-            getMusicIdeaUseCase.getAll().onSuccess { ideas ->
+            musicIdeaRepository.getAll().onSuccess { ideas ->
                 _musicIdeas = ideas
             }
         }
@@ -146,7 +146,7 @@ class LibraryViewModel(
                     println("Setting playingMusicIdeaId to: $id")
                     _playingMusicIdeaId = id
 
-                    playbackMusicUseCase.startPlayback(audioData)
+                    audioRepository.playAudio(audioData)
                         .onSuccess {
                             println("Successfully started playback for id: $id")
                         }
@@ -165,7 +165,7 @@ class LibraryViewModel(
     fun stopPlayback() {
         viewModelScope.launch {
             println("Stopping playback, current id: $_playingMusicIdeaId")
-            playbackMusicUseCase.stopPlayback()
+            audioRepository.stopPlayback()
             _playingMusicIdeaId = null
             println("Playback stopped, id cleared")
         }
@@ -184,7 +184,7 @@ class LibraryViewModel(
     fun confirmDelete() {
         musicIdeaToDelete?.let { id ->
             viewModelScope.launch {
-                getMusicIdeaUseCase.delete(id).onSuccess {
+                musicIdeaRepository.delete(id).onSuccess {
                     loadMusicIdeas()
                 }
             }
