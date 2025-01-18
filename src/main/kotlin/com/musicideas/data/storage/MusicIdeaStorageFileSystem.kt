@@ -1,12 +1,14 @@
-package com.musicideas.data.source.local
+package com.musicideas.data.storage
 
-import com.musicideas.domain.model.MusicIdea
+import com.musicideas.core.model.MusicIdea
+import com.musicideas.data.storage.serialization.deserializeMusicIdea
+import com.musicideas.data.storage.serialization.serializeMetadata
 import java.io.File
 
 
-class MusicIdeaLocalDataSourceImpl(
+class MusicIdeaStorageFileSystem(
     private val baseDir: File
-) : MusicIdeaLocalDataSource {
+) : MusicIdeaStorage {
     private val audioDir = File(baseDir, "audio")
     private val metadataDir = File(baseDir, "metadata")
 

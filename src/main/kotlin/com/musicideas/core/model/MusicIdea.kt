@@ -1,5 +1,5 @@
 // domain/model/MusicIdea.kt
-package com.musicideas.domain.model
+package com.musicideas.core.model
 
 import java.util.*
 

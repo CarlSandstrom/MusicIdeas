@@ -1,8 +1,8 @@
 package com.musicideas.presentation.navigation
 
-import com.musicideas.domain.model.MusicIdea
-import com.musicideas.domain.repository.AudioRepository
-import com.musicideas.domain.repository.MusicIdeaRepository
+import com.musicideas.core.model.MusicIdea
+import com.musicideas.core.repository.AudioRepository
+import com.musicideas.core.repository.MusicIdeaRepository
 import com.musicideas.presentation.common.ViewModel
 import com.musicideas.presentation.screens.cloudstorage.CloudStorageViewModel
 import com.musicideas.presentation.screens.library.LibraryViewModel

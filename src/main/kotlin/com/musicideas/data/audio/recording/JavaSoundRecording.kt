@@ -1,6 +1,6 @@
-package com.musicideas.audio.recording
+package com.musicideas.data.audio.recording
 
-import com.musicideas.audio.AudioFormatConfig
+import com.musicideas.data.audio.config.AudioFormatConfig
 import kotlinx.coroutines.*
 import java.io.ByteArrayOutputStream
 import javax.sound.sampled.AudioSystem

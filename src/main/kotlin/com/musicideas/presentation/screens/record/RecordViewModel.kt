@@ -3,7 +3,7 @@ package com.musicideas.presentation.screens.record
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import com.musicideas.domain.repository.AudioRepository
+import com.musicideas.core.repository.AudioRepository
 import com.musicideas.presentation.common.ViewModel
 import kotlinx.coroutines.launch
 

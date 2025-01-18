@@ -1,6 +1,6 @@
-package com.musicideas.domain.repository
+package com.musicideas.core.repository
 
-import com.musicideas.domain.model.MusicIdea
+import com.musicideas.core.model.MusicIdea
 
 interface MusicIdeaRepository {
     suspend fun save(musicIdea: MusicIdea): Result<Unit>

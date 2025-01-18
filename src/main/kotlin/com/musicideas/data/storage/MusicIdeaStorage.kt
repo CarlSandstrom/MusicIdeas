@@ -1,8 +1,8 @@
-package com.musicideas.data.source.local
+package com.musicideas.data.storage
 
-import com.musicideas.domain.model.MusicIdea
+import com.musicideas.core.model.MusicIdea
 
-interface MusicIdeaLocalDataSource {
+interface MusicIdeaStorage {
     suspend fun saveMusicIdea(musicIdea: MusicIdea)
     suspend fun getMusicIdea(id: String): MusicIdea?
     suspend fun getAllMusicIdeas(): List<MusicIdea>

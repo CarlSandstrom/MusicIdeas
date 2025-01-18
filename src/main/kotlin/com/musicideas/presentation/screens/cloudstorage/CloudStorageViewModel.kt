@@ -1,7 +1,7 @@
 package com.musicideas.presentation.screens.cloudstorage
 
 import com.musicideas.presentation.common.ViewModel
-import com.musicideas.domain.model.MusicIdea
+import com.musicideas.core.model.MusicIdea
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue

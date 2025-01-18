@@ -1,4 +1,4 @@
-package com.musicideas.audio.recording
+package com.musicideas.data.audio.recording
 
 interface AudioRecorder {
     fun startRecording()

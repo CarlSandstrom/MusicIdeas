@@ -1,7 +1,7 @@
 // data/source/local/MusicIdeaSerializer.kt
-package com.musicideas.data.source.local
+package com.musicideas.data.storage.serialization
 
-import com.musicideas.domain.model.*
+import com.musicideas.core.model.*
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.*
 import java.io.File

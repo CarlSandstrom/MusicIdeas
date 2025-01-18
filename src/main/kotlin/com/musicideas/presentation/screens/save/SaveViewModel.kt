@@ -3,11 +3,11 @@ package com.musicideas.presentation.screens.save
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import com.musicideas.domain.model.Genre
-import com.musicideas.domain.model.IdeaType
-import com.musicideas.domain.model.Instrument
-import com.musicideas.domain.model.MusicIdea
-import com.musicideas.domain.repository.MusicIdeaRepository
+import com.musicideas.core.model.Genre
+import com.musicideas.core.model.IdeaType
+import com.musicideas.core.model.Instrument
+import com.musicideas.core.model.MusicIdea
+import com.musicideas.core.repository.MusicIdeaRepository
 import com.musicideas.presentation.common.ViewModel
 import kotlinx.coroutines.launch
 import java.util.*

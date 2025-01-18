@@ -9,7 +9,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.musicideas.domain.model.MusicIdea
+import com.musicideas.core.model.MusicIdea
 import com.musicideas.presentation.components.FilterPanel
 import com.musicideas.presentation.components.MusicIdeaItem
 import com.musicideas.presentation.components.TagCheckboxList

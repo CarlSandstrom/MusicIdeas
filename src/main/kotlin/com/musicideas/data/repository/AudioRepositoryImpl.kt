@@ -1,8 +1,8 @@
 package com.musicideas.data.repository
 
-import com.musicideas.audio.playback.AudioPlayer
-import com.musicideas.audio.recording.AudioRecorder
-import com.musicideas.domain.repository.AudioRepository
+import com.musicideas.data.audio.playback.AudioPlayer
+import com.musicideas.data.audio.recording.AudioRecorder
+import com.musicideas.core.repository.AudioRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 

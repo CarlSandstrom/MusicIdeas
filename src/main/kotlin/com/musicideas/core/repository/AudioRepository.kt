@@ -1,4 +1,4 @@
-package com.musicideas.domain.repository
+package com.musicideas.core.repository
 
 interface AudioRepository {
     suspend fun startRecording(): Result<Unit>

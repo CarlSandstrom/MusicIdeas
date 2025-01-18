@@ -8,7 +8,7 @@ import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import com.musicideas.domain.model.MusicIdea
+import com.musicideas.core.model.MusicIdea
 import com.musicideas.presentation.screens.cloudstorage.CloudStorageView
 import com.musicideas.presentation.screens.library.LibraryView
 import com.musicideas.presentation.screens.record.RecordView

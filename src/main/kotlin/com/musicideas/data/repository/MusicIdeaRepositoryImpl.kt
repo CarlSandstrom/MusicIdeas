@@ -1,13 +1,13 @@
 package com.musicideas.data.repository
 
-import com.musicideas.data.source.local.MusicIdeaLocalDataSource
-import com.musicideas.domain.model.MusicIdea
-import com.musicideas.domain.repository.MusicIdeaRepository
+import com.musicideas.data.storage.MusicIdeaStorage
+import com.musicideas.core.model.MusicIdea
+import com.musicideas.core.repository.MusicIdeaRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 class MusicIdeaRepositoryImpl(
-    private val localDataSource: MusicIdeaLocalDataSource
+    private val localDataSource: MusicIdeaStorage
 ) : MusicIdeaRepository {
     override suspend fun save(musicIdea: MusicIdea): Result<Unit> = withContext(Dispatchers.IO) {
         runCatching {

@@ -1,4 +1,4 @@
-package com.musicideas.audio
+package com.musicideas.data.audio.config
 
 import javax.sound.sampled.AudioFormat
 

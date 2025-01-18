@@ -7,9 +7,9 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.musicideas.domain.model.Genre
-import com.musicideas.domain.model.IdeaType
-import com.musicideas.domain.model.Instrument
+import com.musicideas.core.model.Genre
+import com.musicideas.core.model.IdeaType
+import com.musicideas.core.model.Instrument
 import java.text.SimpleDateFormat
 import java.util.*
 

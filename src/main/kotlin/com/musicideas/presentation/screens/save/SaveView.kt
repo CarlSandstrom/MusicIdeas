@@ -7,9 +7,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.musicideas.domain.model.Genre
-import com.musicideas.domain.model.IdeaType
-import com.musicideas.domain.model.Instrument
+import com.musicideas.core.model.Genre
+import com.musicideas.core.model.IdeaType
+import com.musicideas.core.model.Instrument
 import com.musicideas.presentation.components.ComboBox
 
 @Composable

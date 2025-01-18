@@ -1,4 +1,4 @@
-package com.musicideas.audio.playback
+package com.musicideas.data.audio.playback
 
 interface AudioPlayer {
     fun play(audioData: ByteArray)
