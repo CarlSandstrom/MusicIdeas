@@ -29,5 +29,5 @@ val appModule = module {
     single<MusicIdeaRepository> { MusicIdeaRepositoryImpl(get()) }
 
     // ViewModels
-    single { MainViewModel(get(), get(), get()) }
+    single { MainViewModel(get(), get()) }
 }
