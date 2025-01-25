@@ -31,6 +31,7 @@ fun MusicIdeaItem(
     onShare: () -> Unit = {},
     onDelete: () -> Unit = {},
     onEdit: () -> Unit = {},
+    onExport: () -> Unit = {},
     isPlaying: Boolean = false
 ) {
     val interactionSource = remember { MutableInteractionSource() }
@@ -110,6 +111,16 @@ fun MusicIdeaItem(
                             Icon(
                                 Icons.Default.Share,
                                 contentDescription = "Share"
+                            )
+                        }
+
+                        IconButton(
+                            onClick = onExport,
+                            enabled = !isPlaying
+                        ) {
+                            Icon(
+                                Icons.Default.Save,
+                                contentDescription = "Export"
                             )
                         }
 

@@ -37,6 +37,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
     implementation("io.insert-koin:koin-core:3.5.0")
     implementation("io.insert-koin:koin-compose:1.1.0")
+    implementation("org.bytedeco:javacv-platform:1.5.9")
 }
 
 compose.desktop {

@@ -22,6 +22,7 @@ fun FilterPanel(
     selectedIdeaType: IdeaType?,
     onIdeaTypeSelected: (IdeaType?) -> Unit,
     timeRange: ClosedRange<Long>,
+    fullTimeRange: ClosedRange<Long>,
     onTimeRangeChange: (ClosedRange<Long>) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -61,6 +62,7 @@ fun FilterPanel(
         // Time Range Filter
         TimeRangeSlider(
             timeRange = timeRange,
+            fullRange = fullTimeRange,
             onTimeRangeChange = onTimeRangeChange
         )
     }
@@ -115,6 +117,7 @@ fun <T> FilterDropdown(
 @Composable
 fun TimeRangeSlider(
     timeRange: ClosedRange<Long>,
+    fullRange: ClosedRange<Long>,
     onTimeRangeChange: (ClosedRange<Long>) -> Unit
 ) {
     val dateFormatter = remember { SimpleDateFormat("MMM dd, yyyy", Locale.getDefault()) }
@@ -131,7 +134,7 @@ fun TimeRangeSlider(
             onValueChange = { range ->
                 onTimeRangeChange(range.start.toLong()..range.endInclusive.toLong())
             },
-            valueRange = (System.currentTimeMillis() - 365L * 24 * 60 * 60 * 1000).toFloat()..System.currentTimeMillis().toFloat()
+            valueRange = fullRange.start.toFloat()..fullRange.endInclusive.toFloat()
         )
     }
 }

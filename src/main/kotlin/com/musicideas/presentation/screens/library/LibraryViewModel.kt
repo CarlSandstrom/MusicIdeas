@@ -9,6 +9,7 @@ import com.musicideas.core.model.IdeaType
 import com.musicideas.core.model.Instrument
 import com.musicideas.core.model.MusicIdea
 import com.musicideas.core.repository.AudioRepository
+import com.musicideas.core.repository.ExportDialog
 import com.musicideas.core.repository.MusicIdeaRepository
 import com.musicideas.presentation.common.ViewModel
 import kotlinx.coroutines.launch
@@ -17,25 +18,26 @@ data class FilterState(
     val selectedGenre: Genre? = null,
     val selectedInstrument: Instrument? = null,
     val selectedIdeaType: IdeaType? = null,
-    val timeRange: ClosedRange<Long> = (System.currentTimeMillis() - 365L * 24 * 60 * 60 * 1000)..System.currentTimeMillis(),
+    var timeRange: ClosedRange<Long> = 0L..System.currentTimeMillis(), // Current selection range
+    var fullTimeRange: ClosedRange<Long> = 0L..System.currentTimeMillis(), // Total available range
     val tagSearchQuery: String = "",
     val selectedTags: Set<String> = emptySet()
 )
 
 class LibraryViewModel(
     private val musicIdeaRepository: MusicIdeaRepository,
-    private val audioRepository: AudioRepository
+    private val audioRepository: AudioRepository,
+    private val exportDialog: ExportDialog
 ) : ViewModel() {
 
     var showDeleteConfirmation by mutableStateOf(false)
         private set
     private var musicIdeaToDelete by mutableStateOf<String?>(null)
-        private set
 
     private var _musicIdeas by mutableStateOf<List<MusicIdea>>(emptyList())
     private var _filterState by mutableStateOf(FilterState())
 
-    val musicIdeas: List<MusicIdea> get() = _musicIdeas
+    private val musicIdeas: List<MusicIdea> get() = _musicIdeas
     val filterState: FilterState get() = _filterState
 
     var selectedMusicIdeaId by mutableStateOf<String?>(null)
@@ -97,7 +99,25 @@ class LibraryViewModel(
         viewModelScope.launch {
             musicIdeaRepository.getAll().onSuccess { ideas ->
                 _musicIdeas = ideas
+
+                // Update the time range based on actual recordings
+                if (ideas.isNotEmpty()) {
+                    val oldestRecording = ideas.minOf { it.metadata.createdAt }
+                    val newestRecording = ideas.maxOf { it.metadata.createdAt }
+                    _filterState = _filterState.copy(
+                        timeRange = oldestRecording..newestRecording,
+                        fullTimeRange = oldestRecording..newestRecording
+                    )
+                }
             }
+        }
+    }
+
+    fun exportMusicIdea(id: String) {
+        viewModelScope.launch {
+            val path = exportDialog.show() ?: return@launch
+            val idea = musicIdeas.find { it.id == id } ?: return@launch
+            musicIdeaRepository.exportToMp3(idea, path)
         }
     }
 
@@ -199,7 +219,6 @@ class LibraryViewModel(
     }
 
     fun editMusicIdea(musicIdea: MusicIdea, onEdit: (MusicIdea) -> Unit) {
-        // Implement navigation to the edit screen
         viewModelScope.launch {
             // Load the audio data before editing
             val audioData = musicIdea.audioDataProvider()
@@ -212,5 +231,4 @@ class LibraryViewModel(
             onEdit(ideaWithLoadedAudio)
         }
     }
-
 }

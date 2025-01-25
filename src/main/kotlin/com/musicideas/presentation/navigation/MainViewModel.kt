@@ -2,6 +2,7 @@ package com.musicideas.presentation.navigation
 
 import com.musicideas.core.model.MusicIdea
 import com.musicideas.core.repository.AudioRepository
+import com.musicideas.core.repository.ExportDialog
 import com.musicideas.core.repository.MusicIdeaRepository
 import com.musicideas.presentation.common.ViewModel
 import com.musicideas.presentation.screens.cloudstorage.CloudStorageViewModel
@@ -12,7 +13,8 @@ import com.musicideas.presentation.screens.settings.SettingsViewModel
 
 class MainViewModel(
     private val musicIdeaRepository: MusicIdeaRepository,
-    private val audioRepository: AudioRepository
+    private val audioRepository: AudioRepository,
+    private val exportDialog: ExportDialog
 ) : ViewModel() {
 
     fun createRecordViewModel(): RecordViewModel {
@@ -20,7 +22,7 @@ class MainViewModel(
     }
 
     fun createLibraryViewModel(): LibraryViewModel {
-        return LibraryViewModel(musicIdeaRepository, audioRepository)
+        return LibraryViewModel(musicIdeaRepository, audioRepository, exportDialog)
     }
 
     fun createCloudStorageViewModel(): CloudStorageViewModel {

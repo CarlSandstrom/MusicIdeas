@@ -18,7 +18,7 @@ import com.musicideas.presentation.components.TagFilterInput
 @Composable
 fun LibraryView(
     viewModel: LibraryViewModel,
-    onEdit: (MusicIdea) -> Unit = {}  // Add this parameter
+    onEdit: (MusicIdea) -> Unit = {}
 ) {
     Column(
         modifier = Modifier.fillMaxSize().padding(16.dp),
@@ -41,6 +41,7 @@ fun LibraryView(
                     selectedIdeaType = viewModel.filterState.selectedIdeaType,
                     onIdeaTypeSelected = { viewModel.updateFilter { copy(selectedIdeaType = it) } },
                     timeRange = viewModel.filterState.timeRange,
+                    fullTimeRange = viewModel.filterState.fullTimeRange,
                     onTimeRangeChange = { viewModel.updateFilter { copy(timeRange = it) } }
                 )
 
@@ -72,13 +73,15 @@ fun LibraryView(
                         onDelete = { viewModel.promptDeleteMusicIdea(musicIdea.id) },
                         onStop = { viewModel.stopPlayback() },
                         onShare = { viewModel.shareMusicIdea(musicIdea.id) },
-                        onEdit = { viewModel.editMusicIdea(musicIdea, onEdit) }  // Updated this line
+                        onEdit = { viewModel.editMusicIdea(musicIdea, onEdit) },
+                        onExport = { viewModel.exportMusicIdea(musicIdea.id) }
                     )
                 }
             }
         }
     }
 
+    // Delete confirmation dialog
     if (viewModel.showDeleteConfirmation) {
         AlertDialog(
             onDismissRequest = { viewModel.dismissDeleteDialog() },

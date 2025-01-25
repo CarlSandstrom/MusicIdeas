@@ -1,8 +1,9 @@
 package com.musicideas.data.repository
 
-import com.musicideas.data.storage.MusicIdeaStorage
 import com.musicideas.core.model.MusicIdea
 import com.musicideas.core.repository.MusicIdeaRepository
+import com.musicideas.data.audio.encoding.Mp3Encoder
+import com.musicideas.data.storage.MusicIdeaStorage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -30,6 +31,12 @@ class MusicIdeaRepositoryImpl(
     override suspend fun delete(id: String): Result<Unit> = withContext(Dispatchers.IO) {
         runCatching {
             localDataSource.deleteMusicIdea(id)
+        }
+    }
+
+    override suspend fun exportToMp3(musicIdea: MusicIdea, outputPath: String): Result<Unit> = withContext(Dispatchers.IO) {
+        runCatching {
+            Mp3Encoder().encode(musicIdea, outputPath)
         }
     }
 }

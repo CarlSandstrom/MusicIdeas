@@ -7,4 +7,5 @@ interface MusicIdeaRepository {
     suspend fun getById(id: String): Result<MusicIdea>
     suspend fun getAll(): Result<List<MusicIdea>>
     suspend fun delete(id: String): Result<Unit>
+    suspend fun exportToMp3(musicIdea: MusicIdea, outputPath: String): Result<Unit>
 }

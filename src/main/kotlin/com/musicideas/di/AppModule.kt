@@ -1,15 +1,17 @@
 package com.musicideas.di
 
+import com.musicideas.core.repository.AudioRepository
+import com.musicideas.core.repository.ExportDialog
+import com.musicideas.core.repository.MusicIdeaRepository
 import com.musicideas.data.audio.playback.AudioPlayer
 import com.musicideas.data.audio.playback.JavaSoundPlayer
 import com.musicideas.data.audio.recording.AudioRecorder
 import com.musicideas.data.audio.recording.JavaSoundRecorder
+import com.musicideas.data.platform.ExportDialogDesktop
 import com.musicideas.data.repository.AudioRepositoryImpl
 import com.musicideas.data.repository.MusicIdeaRepositoryImpl
 import com.musicideas.data.storage.MusicIdeaStorage
 import com.musicideas.data.storage.MusicIdeaStorageFileSystem
-import com.musicideas.core.repository.AudioRepository
-import com.musicideas.core.repository.MusicIdeaRepository
 import com.musicideas.presentation.navigation.MainViewModel
 import org.koin.dsl.module
 import java.io.File
@@ -28,6 +30,9 @@ val appModule = module {
     // Repositories
     single<MusicIdeaRepository> { MusicIdeaRepositoryImpl(get()) }
 
+    // Dialogs
+    single<ExportDialog> { ExportDialogDesktop() }
+
     // ViewModels
-    single { MainViewModel(get(), get()) }
+    single { MainViewModel(get(), get(), get()) }
 }
