@@ -25,11 +25,11 @@ class Mp3Encoder {
 
         val recorder = FFmpegFrameRecorder(File(outputPath), format.channels).apply {
             sampleRate = sampleRate
-//            audioChannels = format.
             audioCodec = avcodec.AV_CODEC_ID_MP3
             audioBitrate = 192000  // 192kbps
             format = "mp3"
         }
+        recorder.audioChannels = format.channels
 
         try {
             recorder.start()
