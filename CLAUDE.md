@@ -8,6 +8,13 @@ A Kotlin/Compose Desktop app for musicians to capture and tag audio ideas. Users
 
 ## Commands
 
+JAVA_HOME is not on the system PATH. Set it before running Gradle:
+
+```powershell
+$env:JAVA_HOME = "C:\Users\sands\.jdks\corretto-22.0.2"
+$env:PATH = "$env:JAVA_HOME\bin;$env:PATH"
+```
+
 ```bash
 ./gradlew run        # Run the desktop app
 ./gradlew build      # Build the project
