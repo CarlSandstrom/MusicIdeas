@@ -8,6 +8,6 @@ object AudioFormatConfig {
         16,      // Sample size in bits
         1,       // Channels (mono)
         true,    // Signed
-        true     // Big endian
+        false    // Little endian (required for Windows audio drivers)
     )
 }
