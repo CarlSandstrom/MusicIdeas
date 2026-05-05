@@ -30,7 +30,7 @@ class MainViewModel(
     }
 
     fun createSettingsViewModel(): SettingsViewModel {
-        return SettingsViewModel()
+        return SettingsViewModel(audioRepository)
     }
 
     fun createSaveViewModel(

@@ -31,6 +31,37 @@ fun AppNavigation(mainViewModel: MainViewModel) {
     var musicIdeaToEdit by remember { mutableStateOf<MusicIdea?>(null) }
     var audioDataForEdit by remember { mutableStateOf<ByteArray?>(null) }
 
+    val recordViewModel = remember { mainViewModel.createRecordViewModel() }
+    val libraryViewModel = remember { mainViewModel.createLibraryViewModel() }
+    val settingsViewModel = remember { mainViewModel.createSettingsViewModel() }
+    val cloudStorageViewModel = remember { mainViewModel.createCloudStorageViewModel() }
+    val saveViewModel = remember(recordingToSave) {
+        recordingToSave?.let { audioData ->
+            mainViewModel.createSaveViewModel(
+                audioData = audioData,
+                onSaveComplete = {
+                    currentScreen = Screen.Record
+                    recordingToSave = null
+                }
+            )
+        }
+    }
+    val editViewModel = remember(musicIdeaToEdit, audioDataForEdit) {
+        val idea = musicIdeaToEdit
+        val audio = audioDataForEdit
+        if (idea != null && audio != null) {
+            mainViewModel.createSaveViewModel(
+                audioData = audio,
+                existingMusicIdea = idea,
+                onSaveComplete = {
+                    currentScreen = Screen.Library
+                    musicIdeaToEdit = null
+                    audioDataForEdit = null
+                }
+            )
+        } else null
+    }
+
     // Load audio data when musicIdeaToEdit changes
     LaunchedEffect(musicIdeaToEdit) {
         if (musicIdeaToEdit != null) {
@@ -58,51 +89,23 @@ fun AppNavigation(mainViewModel: MainViewModel) {
         Box(modifier = Modifier.padding(paddingValues)) {
             when (currentScreen) {
                 Screen.Record -> RecordView(
-                    viewModel = mainViewModel.createRecordViewModel(),
+                    viewModel = recordViewModel,
                     onSave = { audioData ->
                         recordingToSave = audioData
                         currentScreen = Screen.Save
                     }
                 )
                 Screen.Library -> LibraryView(
-                    viewModel = mainViewModel.createLibraryViewModel(),
+                    viewModel = libraryViewModel,
                     onEdit = { musicIdea ->
                         musicIdeaToEdit = musicIdea
                         currentScreen = Screen.Edit
                     }
                 )
-                Screen.Settings -> SettingsView(mainViewModel.createSettingsViewModel())
-                Screen.CloudStorage -> CloudStorageView(mainViewModel.createCloudStorageViewModel())
-                Screen.Save -> {
-                    recordingToSave?.let { audioData ->
-                        SaveView(
-                            mainViewModel.createSaveViewModel(
-                                audioData = audioData,
-                                onSaveComplete = {
-                                    currentScreen = Screen.Record
-                                    recordingToSave = null
-                                }
-                            )
-                        )
-                    }
-                }
-                Screen.Edit -> {
-                    val idea = musicIdeaToEdit
-                    val audio = audioDataForEdit
-                    if (idea != null && audio != null) {
-                        SaveView(
-                            mainViewModel.createSaveViewModel(
-                                audioData = audio,
-                                existingMusicIdea = idea,
-                                onSaveComplete = {
-                                    currentScreen = Screen.Library
-                                    musicIdeaToEdit = null
-                                    audioDataForEdit = null
-                                }
-                            )
-                        )
-                    }
-                }
+                Screen.Settings -> SettingsView(settingsViewModel)
+                Screen.CloudStorage -> CloudStorageView(cloudStorageViewModel)
+                Screen.Save -> saveViewModel?.let { SaveView(it) }
+                Screen.Edit -> editViewModel?.let { SaveView(it) }
             }
         }
     }

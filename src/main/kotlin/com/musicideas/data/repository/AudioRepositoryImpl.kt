@@ -40,4 +40,12 @@ class AudioRepositoryImpl(
 
     override fun getInputLevel(): Float = recorder.getInputLevel()
 
+    override fun availableInputDevices(): List<String> =
+        recorder.availableInputDevices().map { it.name }
+
+    override fun setInputDevice(name: String) {
+        val mixerInfo = recorder.availableInputDevices().firstOrNull { it.name == name }
+        recorder.setInputDevice(mixerInfo)
+    }
+
 }

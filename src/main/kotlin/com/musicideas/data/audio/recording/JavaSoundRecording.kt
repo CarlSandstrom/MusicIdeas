@@ -6,6 +6,7 @@ import java.io.ByteArrayOutputStream
 import javax.sound.sampled.AudioSystem
 import javax.sound.sampled.DataLine
 import javax.sound.sampled.LineUnavailableException
+import javax.sound.sampled.Mixer
 import javax.sound.sampled.TargetDataLine
 import kotlin.math.sqrt
 
@@ -13,11 +14,28 @@ open class JavaSoundRecorder : AudioRecorder {
     private var _isRecording = false
     override val isRecording: Boolean get() = _isRecording
 
+    private var selectedMixerInfo: Mixer.Info? = null
     private var line: TargetDataLine? = null
     private val bufferSize = 8192
     private var recordingJob: Job? = null
     private var currentLevel = 0f
     private val audioBuffer = ByteArrayOutputStream()
+
+    override fun availableInputDevices(): List<Mixer.Info> {
+        val lineInfo = DataLine.Info(TargetDataLine::class.java, AudioFormatConfig.format)
+        return AudioSystem.getMixerInfo().filter { mixerInfo ->
+            try {
+                val mixer = AudioSystem.getMixer(mixerInfo)
+                mixer.isLineSupported(lineInfo)
+            } catch (_: Exception) {
+                false
+            }
+        }
+    }
+
+    override fun setInputDevice(mixerInfo: Mixer.Info?) {
+        selectedMixerInfo = mixerInfo
+    }
 
     override fun startRecording() {
         if (isRecording) return
@@ -25,11 +43,14 @@ open class JavaSoundRecorder : AudioRecorder {
         audioBuffer.reset()
         try {
             val info = DataLine.Info(TargetDataLine::class.java, AudioFormatConfig.format)
-            if (!AudioSystem.isLineSupported(info)) {
-                throw LineUnavailableException("Line not supported")
-            }
+            println("Recording with device: ${selectedMixerInfo?.name ?: "system default"}")
 
-            line = (AudioSystem.getLine(info) as TargetDataLine).apply {
+            line = (selectedMixerInfo
+                ?.let { AudioSystem.getMixer(it).getLine(info) as TargetDataLine }
+                ?: run {
+                    if (!AudioSystem.isLineSupported(info)) throw LineUnavailableException("Line not supported")
+                    AudioSystem.getLine(info) as TargetDataLine
+                }).apply {
                 open(AudioFormatConfig.format)
                 start()
             }

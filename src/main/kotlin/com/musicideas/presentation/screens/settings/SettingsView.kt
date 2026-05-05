@@ -16,6 +16,13 @@ fun SettingsView(viewModel: SettingsViewModel) {
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         ComboBox(
+            label = "Input Device",
+            options = viewModel.availableInputDevices,
+            selectedOption = viewModel.selectedInputDevice,
+            onOptionSelected = { viewModel.onInputDeviceSelected(it) }
+        )
+
+        ComboBox(
             label = "Audio Quality",
             options = AudioQuality.entries.toList(),
             selectedOption = viewModel.audioQuality,
