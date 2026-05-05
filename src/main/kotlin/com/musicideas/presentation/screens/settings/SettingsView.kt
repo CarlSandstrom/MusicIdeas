@@ -7,6 +7,7 @@ import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.musicideas.core.model.AudioQuality
 import com.musicideas.presentation.components.ComboBox
 
 @Composable
@@ -26,12 +27,12 @@ fun SettingsView(viewModel: SettingsViewModel) {
             label = "Audio Quality",
             options = AudioQuality.entries.toList(),
             selectedOption = viewModel.audioQuality,
-            onOptionSelected = { viewModel.audioQuality = it }
+            onOptionSelected = { viewModel.onAudioQualitySelected(it) }
         )
 
         TextField(
             value = viewModel.saveLocation,
-            onValueChange = { viewModel.saveLocation = it },
+            onValueChange = { viewModel.onSaveLocationChanged(it) },
             label = { Text("Save Location") },
             modifier = Modifier.fillMaxWidth()
         )
@@ -42,7 +43,7 @@ fun SettingsView(viewModel: SettingsViewModel) {
             Text("Dark Mode")
             Switch(
                 checked = viewModel.darkMode,
-                onCheckedChange = { viewModel.darkMode = it }
+                onCheckedChange = { viewModel.onDarkModeChanged(it) }
             )
         }
     }

@@ -3,6 +3,9 @@ package com.musicideas.di
 import com.musicideas.core.repository.AudioRepository
 import com.musicideas.core.repository.ExportDialog
 import com.musicideas.core.repository.MusicIdeaRepository
+import com.musicideas.core.repository.SettingsRepository
+import com.musicideas.data.settings.LinuxSettingsRepository
+import com.musicideas.data.settings.WindowsSettingsRepository
 import com.musicideas.data.audio.playback.AudioPlayer
 import com.musicideas.data.audio.playback.JavaSoundPlayer
 import com.musicideas.data.audio.recording.AudioRecorder
@@ -17,6 +20,14 @@ import org.koin.dsl.module
 import java.io.File
 
 val appModule = module {
+    // Settings
+    single<SettingsRepository> {
+        if (System.getProperty("os.name").lowercase().contains("win"))
+            WindowsSettingsRepository()
+        else
+            LinuxSettingsRepository()
+    }
+
     // Data Sources
     single<MusicIdeaStorage> {
         MusicIdeaStorageFileSystem(
@@ -34,5 +45,5 @@ val appModule = module {
     single<ExportDialog> { ExportDialogDesktop() }
 
     // ViewModels
-    single { MainViewModel(get(), get(), get()) }
+    single { MainViewModel(get(), get(), get(), get()) }
 }
