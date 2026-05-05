@@ -22,20 +22,28 @@ class RecordViewModel(
     var audioData by mutableStateOf<ByteArray?>(null)
         private set
 
+    var errorMessage by mutableStateOf<String?>(null)
+        private set
+
+    fun clearError() { errorMessage = null }
+
     fun startRecording() {
+        errorMessage = null
         viewModelScope.launch {
-            audioRepository.startRecording().onSuccess {
-                isRecording = true
-            }
+            audioRepository.startRecording()
+                .onSuccess { isRecording = true }
+                .onFailure { errorMessage = "Failed to start recording: ${it.message}" }
         }
     }
 
     fun stopRecording() {
         viewModelScope.launch {
-            audioRepository.stopRecording().onSuccess { audio ->
-                audioData = audio
-                isRecording = false
-            }
+            audioRepository.stopRecording()
+                .onSuccess { audio ->
+                    audioData = audio
+                    isRecording = false
+                }
+                .onFailure { errorMessage = "Failed to stop recording: ${it.message}" }
         }
     }
 

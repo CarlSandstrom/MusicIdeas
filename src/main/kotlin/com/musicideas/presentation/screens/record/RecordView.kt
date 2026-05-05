@@ -6,6 +6,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.musicideas.presentation.components.VolumeGauge
 import com.musicideas.presentation.components.WaveformView
@@ -35,6 +36,14 @@ fun RecordView(viewModel: RecordViewModel, onSave: (ByteArray) -> Unit) {
             Box(modifier = Modifier.width(100.dp)) {
                 VolumeGauge(viewModel)
             }
+        }
+
+        viewModel.errorMessage?.let { error ->
+            Text(
+                text = error,
+                color = Color.Red,
+                modifier = Modifier.padding(bottom = 4.dp)
+            )
         }
 
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
