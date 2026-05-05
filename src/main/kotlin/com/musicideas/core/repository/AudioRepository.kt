@@ -1,6 +1,8 @@
 package com.musicideas.core.repository
 
 interface AudioRepository {
+    fun startMonitoring()
+    fun stopMonitoring()
     suspend fun startRecording(): Result<Unit>
     suspend fun stopRecording(): Result<ByteArray>
     suspend fun playAudio(audioData: ByteArray): Result<Unit>

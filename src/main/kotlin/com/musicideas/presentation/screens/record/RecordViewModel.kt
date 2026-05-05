@@ -25,6 +25,10 @@ class RecordViewModel(
     var errorMessage by mutableStateOf<String?>(null)
         private set
 
+    init {
+        audioRepository.startMonitoring()
+    }
+
     fun clearError() { errorMessage = null }
 
     fun startRecording() {
@@ -42,6 +46,7 @@ class RecordViewModel(
                 .onSuccess { audio ->
                     audioData = audio
                     isRecording = false
+                    audioRepository.startMonitoring()
                 }
                 .onFailure { errorMessage = "Failed to stop recording: ${it.message}" }
         }
@@ -63,7 +68,10 @@ class RecordViewModel(
         }
     }
 
-    fun getInputLevel(): Float {
-        return audioRepository.getInputLevel()
+    fun getInputLevel(): Float = audioRepository.getInputLevel()
+
+    override fun onCleared() {
+        audioRepository.stopMonitoring()
+        super.onCleared()
     }
 }

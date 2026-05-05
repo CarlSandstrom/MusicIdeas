@@ -3,6 +3,8 @@ package com.musicideas.data.audio.recording
 import javax.sound.sampled.Mixer
 
 interface AudioRecorder {
+    fun startMonitoring()
+    fun stopMonitoring()
     fun startRecording()
     fun stopRecording(): ByteArray
     fun getInputLevel(): Float

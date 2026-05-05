@@ -18,6 +18,8 @@ open class JavaSoundRecorder : AudioRecorder {
     private var line: TargetDataLine? = null
     private val bufferSize = 8192
     private var recordingJob: Job? = null
+    private var monitoringJob: Job? = null
+    private var isMonitoring = false
     private var currentLevel = 0f
     private val audioBuffer = ByteArrayOutputStream()
 
@@ -37,24 +39,53 @@ open class JavaSoundRecorder : AudioRecorder {
         selectedMixerInfo = mixerInfo
     }
 
+    private fun openLine() {
+        val info = DataLine.Info(TargetDataLine::class.java, AudioFormatConfig.format)
+        line = (selectedMixerInfo
+            ?.let { AudioSystem.getMixer(it).getLine(info) as TargetDataLine }
+            ?: run {
+                if (!AudioSystem.isLineSupported(info)) throw LineUnavailableException("Line not supported")
+                AudioSystem.getLine(info) as TargetDataLine
+            }).apply {
+            open(AudioFormatConfig.format)
+            start()
+        }
+    }
+
+    override fun startMonitoring() {
+        if (isMonitoring || isRecording) return
+        try {
+            openLine()
+            isMonitoring = true
+            monitoringJob = CoroutineScope(Dispatchers.IO).launch {
+                val buffer = ByteArray(bufferSize)
+                while (isMonitoring && isActive) {
+                    val count = line?.read(buffer, 0, buffer.size) ?: 0
+                    if (count > 0) currentLevel = calculateRMSLevel(buffer, count)
+                    yield()
+                }
+            }
+        } catch (e: Exception) {
+            println("Error starting monitoring: ${e.message}")
+        }
+    }
+
+    override fun stopMonitoring() {
+        isMonitoring = false
+        monitoringJob?.cancel()
+        monitoringJob = null
+        line?.apply { stop(); close() }
+        line = null
+        currentLevel = 0f
+    }
+
     override fun startRecording() {
         if (isRecording) return
-
+        stopMonitoring()
         audioBuffer.reset()
         try {
-            val info = DataLine.Info(TargetDataLine::class.java, AudioFormatConfig.format)
             println("Recording with device: ${selectedMixerInfo?.name ?: "system default"}")
-
-            line = (selectedMixerInfo
-                ?.let { AudioSystem.getMixer(it).getLine(info) as TargetDataLine }
-                ?: run {
-                    if (!AudioSystem.isLineSupported(info)) throw LineUnavailableException("Line not supported")
-                    AudioSystem.getLine(info) as TargetDataLine
-                }).apply {
-                open(AudioFormatConfig.format)
-                start()
-            }
-
+            openLine()
             _isRecording = true
             recordingJob = CoroutineScope(Dispatchers.IO).launch {
                 val buffer = ByteArray(bufferSize)
@@ -77,10 +108,7 @@ open class JavaSoundRecorder : AudioRecorder {
     override fun stopRecording(): ByteArray {
         _isRecording = false
         recordingJob?.cancel()
-        line?.apply {
-            stop()
-            close()
-        }
+        line?.apply { stop(); close() }
         line = null
         return audioBuffer.toByteArray()
     }

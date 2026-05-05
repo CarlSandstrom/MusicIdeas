@@ -10,6 +10,9 @@ class AudioRepositoryImpl(
     private val recorder: AudioRecorder,
     private val player: AudioPlayer
 ) : AudioRepository {
+    override fun startMonitoring() = recorder.startMonitoring()
+    override fun stopMonitoring() = recorder.stopMonitoring()
+
     override suspend fun startRecording(): Result<Unit> = withContext(Dispatchers.IO) {
         runCatching {
             println("Starting recording")

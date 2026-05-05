@@ -1,12 +1,15 @@
 package com.musicideas.presentation.screens.record
 
+import androidx.compose.animation.core.*
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.musicideas.presentation.components.VolumeGauge
 import com.musicideas.presentation.components.WaveformView
@@ -33,8 +36,8 @@ fun RecordView(viewModel: RecordViewModel, onSave: (ByteArray) -> Unit) {
                 }
             }
 
-            Box(modifier = Modifier.width(100.dp)) {
-                VolumeGauge(viewModel)
+            Box(modifier = Modifier.width(120.dp)) {
+                VolumeGauge(viewModel, viewModel.isRecording)
             }
         }
 
@@ -46,20 +49,20 @@ fun RecordView(viewModel: RecordViewModel, onSave: (ByteArray) -> Unit) {
             )
         }
 
+        if (viewModel.isRecording) {
+            RecordingIndicator()
+        }
+
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Button(
-                onClick = {
-                    viewModel.startPlayback()
-                },
+                onClick = { viewModel.startPlayback() },
                 enabled = !viewModel.isPlaying && !viewModel.isRecording && viewModel.audioData != null
             ) {
                 Text("Play")
             }
 
             Button(
-                onClick = {
-                    viewModel.startRecording()
-                },
+                onClick = { viewModel.startRecording() },
                 enabled = !viewModel.isRecording && !viewModel.isPlaying
             ) {
                 Text("Record")
@@ -76,11 +79,34 @@ fun RecordView(viewModel: RecordViewModel, onSave: (ByteArray) -> Unit) {
             }
 
             Button(
-                onClick = { viewModel.audioData?.let { onSave(it) }},
-                enabled = (!viewModel.isRecording) && (!viewModel.isPlaying) && (viewModel.audioData != null)
+                onClick = { viewModel.audioData?.let { onSave(it) } },
+                enabled = !viewModel.isRecording && !viewModel.isPlaying && viewModel.audioData != null
             ) {
                 Text("Save")
             }
         }
+    }
+}
+
+@Composable
+private fun RecordingIndicator() {
+    val transition = rememberInfiniteTransition()
+    val alpha by transition.animateFloat(
+        initialValue = 1f,
+        targetValue = 0.2f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(600),
+            repeatMode = RepeatMode.Reverse
+        )
+    )
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Canvas(modifier = Modifier.size(12.dp)) {
+            drawCircle(Color.Red.copy(alpha = alpha))
+        }
+        Text("REC", color = Color.Red, fontWeight = FontWeight.Bold)
     }
 }
