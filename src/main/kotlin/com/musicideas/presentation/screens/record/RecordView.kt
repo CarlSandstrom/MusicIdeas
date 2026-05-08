@@ -37,7 +37,7 @@ fun RecordView(viewModel: RecordViewModel, onSave: (ByteArray) -> Unit) {
             }
 
             Box(modifier = Modifier.width(120.dp)) {
-                VolumeGauge(viewModel, viewModel.isRecording)
+                VolumeGauge(viewModel, viewModel.isRecording, viewModel.isPlaying)
             }
         }
 

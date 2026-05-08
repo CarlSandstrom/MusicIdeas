@@ -14,6 +14,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.unit.dp
+import kotlin.math.abs
 
 @Composable
 fun WaveformView(
@@ -28,12 +29,14 @@ fun WaveformView(
             .padding(4.dp)
     ) {
         Canvas(modifier = modifier.fillMaxSize()) {
-            val samplesPerPixel = (audioData.size / size.width).toInt().coerceAtLeast(2)
+            if (audioData.size < 2) return@Canvas
+            val samplesPerPixel = (audioData.size / 2 / size.width).toInt().coerceAtLeast(1)
             val amplitudes = getAmplitudes(audioData, samplesPerPixel)
 
             drawWaveform(amplitudes, Color.Blue)
 
-            val playheadX = (currentTimeMs / audioData.size * size.width)
+            val totalDurationMs = audioData.size / (44100f * 2) * 1000f
+            val playheadX = currentTimeMs / totalDurationMs * size.width
             if (playheadX in 0f..size.width) {
                 drawLine(
                     Color.Red,
@@ -52,14 +55,13 @@ private fun getAmplitudes(audioData: ByteArray, samplesPerPixel: Int): List<Floa
         .map { chunk ->
             chunk
                 .chunked(2)
-                .map { bytes ->
+                .mapNotNull { bytes ->
                     if (bytes.size >= 2) {
                         val sample = (bytes[1].toInt() shl 8) or (bytes[0].toInt() and 0xFF)
-                        sample / 32768f
-                    } else 0f
+                        abs(sample / 32768f)
+                    } else null
                 }
-                .average()
-                .toFloat()
+                .maxOrNull() ?: 0f
         }.toList()
 }
 
@@ -69,6 +71,8 @@ private fun DrawScope.drawWaveform(amplitudes: List<Float>, color: Color) {
     val heightScale = size.height / 2
 
     if (amplitudes.isEmpty()) return
+
+    drawLine(color, Offset(0f, centerY), Offset(size.width, centerY), strokeWidth = 1f)
 
     path.moveTo(0f, centerY)
     amplitudes.forEachIndexed { index, amplitude ->

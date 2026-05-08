@@ -15,18 +15,18 @@ import kotlin.math.sqrt
 import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
-fun VolumeGauge(viewModel: RecordViewModel, isRecording: Boolean = false) {
+fun VolumeGauge(viewModel: RecordViewModel, isRecording: Boolean = false, isPlaying: Boolean = false) {
     var level by remember { mutableStateOf(0f) }
 
     LaunchedEffect(Unit) {
         while (true) {
-            level = viewModel.getInputLevel()
+            level = viewModel.getLevel()
             delay(50.milliseconds)
         }
     }
 
     Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
-        Text("Input", fontSize = 11.sp)
+        Text(if (isPlaying) "Output" else "Input", fontSize = 11.sp)
         BoxWithConstraints(
             modifier = Modifier.weight(1f).fillMaxWidth().background(Color.Gray)
         ) {
