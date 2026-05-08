@@ -2,6 +2,9 @@ package com.musicideas.data.audio.recording
 
 import com.musicideas.data.audio.config.AudioFormatConfig
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import java.io.ByteArrayOutputStream
 import javax.sound.sampled.AudioSystem
 import javax.sound.sampled.DataLine
@@ -13,6 +16,9 @@ import kotlin.math.sqrt
 open class JavaSoundRecorder : AudioRecorder {
     private var _isRecording = false
     override val isRecording: Boolean get() = _isRecording
+
+    private val _recordingChunks = MutableSharedFlow<ByteArray>(extraBufferCapacity = 128)
+    override val recordingChunks: Flow<ByteArray> = _recordingChunks.asSharedFlow()
 
     private var selectedMixerInfo: Mixer.Info? = null
     private var line: TargetDataLine? = null
@@ -98,6 +104,7 @@ open class JavaSoundRecorder : AudioRecorder {
                     if (count > 0) {
                         audioBuffer.write(buffer, 0, count)
                         currentLevel = calculateRMSLevel(buffer, count)
+                        _recordingChunks.tryEmit(buffer.copyOf(count))
                     }
                     yield()
                 }

@@ -5,8 +5,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.musicideas.core.repository.AudioRepository
 import com.musicideas.presentation.common.ViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.io.ByteArrayOutputStream
 import kotlin.math.sqrt
 
 class RecordViewModel(
@@ -24,8 +26,13 @@ class RecordViewModel(
     var audioData by mutableStateOf<ByteArray?>(null)
         private set
 
+    var liveBuffer by mutableStateOf(ByteArray(0))
+        private set
+
     var playbackLevel by mutableStateOf(0f)
         private set
+
+    private var recordingChunksJob: Job? = null
 
     var errorMessage by mutableStateOf<String?>(null)
         private set
@@ -38,18 +45,31 @@ class RecordViewModel(
 
     fun startRecording() {
         errorMessage = null
+        liveBuffer = ByteArray(0)
         viewModelScope.launch {
             audioRepository.startRecording()
-                .onSuccess { isRecording = true }
+                .onSuccess {
+                    isRecording = true
+                    val accumulator = ByteArrayOutputStream()
+                    recordingChunksJob = launch {
+                        audioRepository.recordingChunks.collect { chunk ->
+                            accumulator.write(chunk)
+                            liveBuffer = accumulator.toByteArray()
+                        }
+                    }
+                }
                 .onFailure { errorMessage = "Failed to start recording: ${it.message}" }
         }
     }
 
     fun stopRecording() {
         viewModelScope.launch {
+            recordingChunksJob?.cancel()
+            recordingChunksJob = null
             audioRepository.stopRecording()
                 .onSuccess { audio ->
                     audioData = audio
+                    liveBuffer = ByteArray(0)
                     isRecording = false
                     audioRepository.startMonitoring()
                 }

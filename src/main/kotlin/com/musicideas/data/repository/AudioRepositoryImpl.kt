@@ -4,6 +4,7 @@ import com.musicideas.data.audio.playback.AudioPlayer
 import com.musicideas.data.audio.recording.AudioRecorder
 import com.musicideas.core.repository.AudioRepository
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 
 class AudioRepositoryImpl(
@@ -40,6 +41,8 @@ class AudioRepositoryImpl(
             player.stop()
         }
     }
+
+    override val recordingChunks: Flow<ByteArray> get() = recorder.recordingChunks
 
     override fun getInputLevel(): Float = recorder.getInputLevel()
 

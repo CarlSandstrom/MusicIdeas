@@ -23,17 +23,15 @@ fun RecordView(viewModel: RecordViewModel, onSave: (ByteArray) -> Unit) {
     ) {
         Row(modifier = Modifier.weight(1f)) {
             Box(modifier = Modifier.weight(1f).fillMaxHeight()) {
-                if (viewModel.audioData != null) {
-                    WaveformView(
-                        audioData = viewModel.audioData!!,
-                        currentTimeMs = viewModel.currentTimeMs
-                    )
-                } else {
-                    WaveformView(
-                        audioData = ByteArray(0),
-                        currentTimeMs = 0f
-                    )
+                val waveformData = when {
+                    viewModel.isRecording -> viewModel.liveBuffer
+                    viewModel.audioData != null -> viewModel.audioData!!
+                    else -> ByteArray(0)
                 }
+                WaveformView(
+                    audioData = waveformData,
+                    currentTimeMs = viewModel.currentTimeMs
+                )
             }
 
             Box(modifier = Modifier.width(120.dp)) {
