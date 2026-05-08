@@ -37,6 +37,10 @@ open class JavaSoundRecorder : AudioRecorder {
 
     override fun setInputDevice(mixerInfo: Mixer.Info?) {
         selectedMixerInfo = mixerInfo
+        if (isMonitoring) {
+            stopMonitoring()
+            startMonitoring()
+        }
     }
 
     private fun openLine() {
