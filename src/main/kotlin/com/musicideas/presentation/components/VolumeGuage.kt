@@ -30,7 +30,7 @@ fun VolumeGauge(viewModel: RecordViewModel, isRecording: Boolean = false, isPlay
         BoxWithConstraints(
             modifier = Modifier.weight(1f).fillMaxWidth().background(Color.Gray)
         ) {
-            val displayLevel = sqrt(sqrt(level)).coerceIn(0f, 1f)
+            val displayLevel = sqrt(sqrt(level * 4f)).coerceIn(0f, 1f)
             Box(
                 modifier = Modifier
                     .fillMaxWidth()

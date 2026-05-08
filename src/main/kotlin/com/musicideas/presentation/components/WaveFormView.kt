@@ -32,8 +32,10 @@ fun WaveformView(
             if (audioData.size < 2) return@Canvas
             val samplesPerPixel = (audioData.size / 2 / size.width).toInt().coerceAtLeast(1)
             val amplitudes = getAmplitudes(audioData, samplesPerPixel)
+            val peak = amplitudes.maxOrNull() ?: 1f
+            val normalized = if (peak > 0f) amplitudes.map { it / peak } else amplitudes
 
-            drawWaveform(amplitudes, Color.Blue)
+            drawWaveform(normalized, Color.Blue)
 
             val totalDurationMs = audioData.size / (44100f * 2) * 1000f
             val playheadX = currentTimeMs / totalDurationMs * size.width
