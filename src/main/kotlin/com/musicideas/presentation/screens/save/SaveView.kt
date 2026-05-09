@@ -3,6 +3,7 @@ package com.musicideas.presentation.screens.save
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -61,6 +62,10 @@ fun SaveView(viewModel: SaveViewModel) {
             label = { Text("Custom Tags (comma-separated)") },
             modifier = Modifier.fillMaxWidth()
         )
+
+        viewModel.saveError?.let {
+            Text(it, color = MaterialTheme.colorScheme.error)
+        }
 
         Button(
             onClick = { viewModel.save() }

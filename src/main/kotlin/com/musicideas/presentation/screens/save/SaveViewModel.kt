@@ -29,6 +29,9 @@ class SaveViewModel(
 
     val isEditing = existingMusicIdea != null
 
+    var saveError by mutableStateOf<String?>(null)
+        private set
+
     fun updateTempo(newTempoStr: String) {
         tempoString = newTempoStr
         newTempoStr.toIntOrNull()?.let { newTempo ->
@@ -50,9 +53,9 @@ class SaveViewModel(
                 tags = customTags.split(",").map { it.trim() }.filter { it.isNotEmpty() },
                 existingId = id
             )
-            repository.save(musicIdea).onSuccess {
-                onSaveComplete()
-            }
+            repository.save(musicIdea)
+                .onSuccess { onSaveComplete() }
+                .onFailure { saveError = it.message ?: "Save failed" }
         }
     }
 }

@@ -10,6 +10,8 @@ import com.musicideas.data.audio.playback.AudioPlayer
 import com.musicideas.data.audio.playback.JavaSoundPlayer
 import com.musicideas.data.audio.recording.AudioRecorder
 import com.musicideas.data.audio.recording.JavaSoundRecorder
+import com.musicideas.data.audio.encoding.Mp3Decoder
+import com.musicideas.data.audio.encoding.Mp3Encoder
 import com.musicideas.data.platform.ExportDialogDesktop
 import com.musicideas.data.repository.AudioRepositoryImpl
 import com.musicideas.data.repository.MusicIdeaRepositoryImpl
@@ -29,9 +31,13 @@ val appModule = module {
     }
 
     // Data Sources
+    single { Mp3Encoder() }
+    single { Mp3Decoder() }
     single<MusicIdeaStorage> {
         MusicIdeaStorageFileSystem(
-            baseDir = File(System.getProperty("user.home"), "MusicIdeas")
+            baseDir = File(System.getProperty("user.home"), "MusicIdeas"),
+            mp3Encoder = get(),
+            mp3Decoder = get()
         )
     }
     single<AudioRecorder> { JavaSoundRecorder() }
@@ -39,7 +45,7 @@ val appModule = module {
     single<AudioRepository> { AudioRepositoryImpl(get(), get()) }
 
     // Repositories
-    single<MusicIdeaRepository> { MusicIdeaRepositoryImpl(get()) }
+    single<MusicIdeaRepository> { MusicIdeaRepositoryImpl(get(), get()) }
 
     // Dialogs
     single<ExportDialog> { ExportDialogDesktop() }

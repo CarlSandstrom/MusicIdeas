@@ -40,6 +40,7 @@ fun AppNavigation(mainViewModel: MainViewModel) {
             mainViewModel.createSaveViewModel(
                 audioData = audioData,
                 onSaveComplete = {
+                    libraryViewModel.reload()
                     currentScreen = Screen.Record
                     recordingToSave = null
                 }
@@ -54,6 +55,7 @@ fun AppNavigation(mainViewModel: MainViewModel) {
                 audioData = audio,
                 existingMusicIdea = idea,
                 onSaveComplete = {
+                    libraryViewModel.reload()
                     currentScreen = Screen.Library
                     musicIdeaToEdit = null
                     audioDataForEdit = null

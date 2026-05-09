@@ -95,6 +95,8 @@ class LibraryViewModel(
         loadMusicIdeas()
     }
 
+    fun reload() = loadMusicIdeas()
+
     private fun loadMusicIdeas() {
         viewModelScope.launch {
             musicIdeaRepository.getAll().onSuccess { ideas ->

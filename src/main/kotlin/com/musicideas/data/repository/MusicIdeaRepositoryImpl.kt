@@ -8,7 +8,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 class MusicIdeaRepositoryImpl(
-    private val localDataSource: MusicIdeaStorage
+    private val localDataSource: MusicIdeaStorage,
+    private val mp3Encoder: Mp3Encoder
 ) : MusicIdeaRepository {
     override suspend fun save(musicIdea: MusicIdea): Result<Unit> = withContext(Dispatchers.IO) {
         runCatching {
@@ -36,7 +37,7 @@ class MusicIdeaRepositoryImpl(
 
     override suspend fun exportToMp3(musicIdea: MusicIdea, outputPath: String): Result<Unit> = withContext(Dispatchers.IO) {
         runCatching {
-            Mp3Encoder().encode(musicIdea, outputPath)
+            mp3Encoder.encode(musicIdea, outputPath)
         }
     }
 }
