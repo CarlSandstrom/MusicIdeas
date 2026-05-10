@@ -10,12 +10,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.musicideas.presentation.components.VolumeGauge
 import com.musicideas.presentation.components.WaveformView
 
 @Composable
-fun RecordView(viewModel: RecordViewModel, onSave: (ByteArray) -> Unit) {
+fun RecordView(viewModel: RecordViewModel, onSave: (ByteArray, Int) -> Unit) {
     Column(
         modifier = Modifier.fillMaxSize().padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -38,6 +39,8 @@ fun RecordView(viewModel: RecordViewModel, onSave: (ByteArray) -> Unit) {
                 VolumeGauge(viewModel, viewModel.isRecording, viewModel.isPlaying)
             }
         }
+
+        MetronomeControls(viewModel)
 
         viewModel.errorMessage?.let { error ->
             Text(
@@ -77,11 +80,49 @@ fun RecordView(viewModel: RecordViewModel, onSave: (ByteArray) -> Unit) {
             }
 
             Button(
-                onClick = { viewModel.audioData?.let { onSave(it) } },
+                onClick = {
+                    viewModel.audioData?.let { audio ->
+                        val tempo = if (viewModel.metronomeEnabled) viewModel.metronomeBpm else 0
+                        viewModel.stopMetronome()
+                        onSave(audio, tempo)
+                    }
+                },
                 enabled = !viewModel.isRecording && !viewModel.isPlaying && viewModel.audioData != null
             ) {
                 Text("Save")
             }
+        }
+    }
+}
+
+@Composable
+private fun MetronomeControls(viewModel: RecordViewModel) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Button(onClick = { viewModel.toggleMetronome() }) {
+            Text(if (viewModel.metronomeEnabled) "Metronome: ON" else "Metronome: OFF")
+        }
+
+        Button(
+            onClick = { viewModel.updateMetronomeBpm(viewModel.metronomeBpm - 5) },
+            enabled = viewModel.metronomeBpm > 40
+        ) {
+            Text("-")
+        }
+
+        Text(
+            text = "${viewModel.metronomeBpm} BPM",
+            modifier = Modifier.width(72.dp),
+            textAlign = TextAlign.Center
+        )
+
+        Button(
+            onClick = { viewModel.updateMetronomeBpm(viewModel.metronomeBpm + 5) },
+            enabled = viewModel.metronomeBpm < 240
+        ) {
+            Text("+")
         }
     }
 }

@@ -28,6 +28,7 @@ sealed class Screen(val route: String, val title: String, val icon: ImageVector)
 fun AppNavigation(mainViewModel: MainViewModel) {
     var currentScreen by remember { mutableStateOf<Screen>(Screen.Record) }
     var recordingToSave by remember { mutableStateOf<ByteArray?>(null) }
+    var tempoForSave by remember { mutableStateOf(0) }
     var musicIdeaToEdit by remember { mutableStateOf<MusicIdea?>(null) }
     var audioDataForEdit by remember { mutableStateOf<ByteArray?>(null) }
 
@@ -39,6 +40,7 @@ fun AppNavigation(mainViewModel: MainViewModel) {
         recordingToSave?.let { audioData ->
             mainViewModel.createSaveViewModel(
                 audioData = audioData,
+                initialTempo = tempoForSave,
                 onSaveComplete = {
                     libraryViewModel.reload()
                     currentScreen = Screen.Record
@@ -92,8 +94,9 @@ fun AppNavigation(mainViewModel: MainViewModel) {
             when (currentScreen) {
                 Screen.Record -> RecordView(
                     viewModel = recordViewModel,
-                    onSave = { audioData ->
+                    onSave = { audioData, tempo ->
                         recordingToSave = audioData
+                        tempoForSave = tempo
                         currentScreen = Screen.Save
                     }
                 )

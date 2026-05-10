@@ -16,16 +16,18 @@ class SaveViewModel(
     private val audioData: ByteArray,
     private val repository: MusicIdeaRepository,
     private val onSaveComplete: () -> Unit,
-    existingMusicIdea: MusicIdea? = null
+    existingMusicIdea: MusicIdea? = null,
+    initialTempo: Int = 120
 ) : ViewModel() {
     var id by mutableStateOf(existingMusicIdea?.id ?: UUID.randomUUID().toString())
     var name by mutableStateOf(existingMusicIdea?.metadata?.name ?: "")
     var genre by mutableStateOf(existingMusicIdea?.metadata?.genre ?: Genre.ROCK)
     var instrument by mutableStateOf(existingMusicIdea?.metadata?.instrument ?: Instrument.GUITAR)
-    var tempo by mutableStateOf(existingMusicIdea?.metadata?.tempo ?: 120)
+    private val defaultTempo = existingMusicIdea?.metadata?.tempo ?: initialTempo
+    var tempo by mutableStateOf(defaultTempo)
     var ideaType by mutableStateOf(existingMusicIdea?.metadata?.ideaType ?: IdeaType.RIFF)
     var customTags by mutableStateOf(existingMusicIdea?.metadata?.tags?.joinToString(",") ?: "")
-    var tempoString by mutableStateOf((existingMusicIdea?.metadata?.tempo ?: 120).toString())
+    var tempoString by mutableStateOf(defaultTempo.toString())
 
     val isEditing = existingMusicIdea != null
 

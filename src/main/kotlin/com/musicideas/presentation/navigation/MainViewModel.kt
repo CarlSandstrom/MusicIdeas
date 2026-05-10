@@ -37,12 +37,14 @@ class MainViewModel(
 
     fun createSaveViewModel(
         audioData: ByteArray,
+        initialTempo: Int = 120,
         existingMusicIdea: MusicIdea? = null,
         onSaveComplete: () -> Unit
     ): SaveViewModel {
         return SaveViewModel(
             audioData = audioData,
             repository = musicIdeaRepository,
+            initialTempo = initialTempo,
             existingMusicIdea = existingMusicIdea,
             onSaveComplete = onSaveComplete
         )
