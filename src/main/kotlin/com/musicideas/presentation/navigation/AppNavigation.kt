@@ -27,8 +27,7 @@ sealed class Screen(val route: String, val title: String, val icon: ImageVector)
 @Composable
 fun AppNavigation(mainViewModel: MainViewModel) {
     var currentScreen by remember { mutableStateOf<Screen>(Screen.Record) }
-    var recordingToSave by remember { mutableStateOf<ByteArray?>(null) }
-    var tempoForSave by remember { mutableStateOf(0) }
+    var pendingSave by remember { mutableStateOf<Pair<ByteArray, Int>?>(null) }
     var musicIdeaToEdit by remember { mutableStateOf<MusicIdea?>(null) }
     var audioDataForEdit by remember { mutableStateOf<ByteArray?>(null) }
 
@@ -36,15 +35,15 @@ fun AppNavigation(mainViewModel: MainViewModel) {
     val libraryViewModel = remember { mainViewModel.createLibraryViewModel() }
     val settingsViewModel = remember { mainViewModel.createSettingsViewModel() }
     val cloudStorageViewModel = remember { mainViewModel.createCloudStorageViewModel() }
-    val saveViewModel = remember(recordingToSave) {
-        recordingToSave?.let { audioData ->
+    val saveViewModel = remember(pendingSave) {
+        pendingSave?.let { (audioData, tempo) ->
             mainViewModel.createSaveViewModel(
                 audioData = audioData,
-                initialTempo = tempoForSave,
+                initialTempo = tempo,
                 onSaveComplete = {
                     libraryViewModel.reload()
                     currentScreen = Screen.Record
-                    recordingToSave = null
+                    pendingSave = null
                 }
             )
         }
@@ -95,8 +94,7 @@ fun AppNavigation(mainViewModel: MainViewModel) {
                 Screen.Record -> RecordView(
                     viewModel = recordViewModel,
                     onSave = { audioData, tempo ->
-                        recordingToSave = audioData
-                        tempoForSave = tempo
+                        pendingSave = Pair(audioData, tempo)
                         currentScreen = Screen.Save
                     }
                 )
