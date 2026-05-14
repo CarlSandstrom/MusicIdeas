@@ -44,6 +44,9 @@ class RecordViewModel(
     var metronomeBpm by mutableStateOf(120)
         private set
 
+    var recordingTempo: Int = 0
+        private set
+
     private var recordingChunksJob: Job? = null
     private var metronomeJob: Job? = null
 
@@ -121,6 +124,7 @@ class RecordViewModel(
     fun startRecording() {
         errorMessage = null
         liveBuffer = ByteArray(0)
+        recordingTempo = if (metronomeEnabled) metronomeBpm else 0
         viewModelScope.launch {
             audioRepository.startRecording()
                 .onSuccess {

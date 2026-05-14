@@ -5,7 +5,8 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
 import androidx.compose.material.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -82,7 +83,7 @@ fun RecordView(viewModel: RecordViewModel, onSave: (ByteArray, Int) -> Unit) {
             Button(
                 onClick = {
                     viewModel.audioData?.let { audio ->
-                        val tempo = if (viewModel.metronomeEnabled) viewModel.metronomeBpm else 0
+                        val tempo = viewModel.recordingTempo
                         viewModel.stopMetronome()
                         onSave(audio, tempo)
                     }
