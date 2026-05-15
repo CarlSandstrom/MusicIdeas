@@ -73,7 +73,7 @@ fun MusicIdeaItem(
                         style = MaterialTheme.typography.bodySmall
                     )
                     Text(
-                        "Tempo: ${musicIdea.metadata.tempo} BPM",
+                        "Tempo: ${if (musicIdea.metadata.tempo == 0) "None specified" else "${musicIdea.metadata.tempo} BPM"}",
                         style = MaterialTheme.typography.bodyMedium
                     )
                 }
