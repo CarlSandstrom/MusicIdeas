@@ -1,11 +1,17 @@
 package com.musicideas.presentation.screens.save
 
+import androidx.compose.foundation.VerticalScrollbar
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollbarAdapter
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
@@ -20,6 +26,7 @@ import com.musicideas.presentation.components.ComboBox
 
 @Composable
 fun SaveView(viewModel: SaveViewModel) {
+    val scrollState = rememberScrollState()
     Box(
         modifier = Modifier.fillMaxSize().onPreviewKeyEvent { keyEvent ->
             if (keyEvent.key == Key.Enter && keyEvent.type == KeyEventType.KeyDown) {
@@ -27,10 +34,11 @@ fun SaveView(viewModel: SaveViewModel) {
                 true
             } else false
         }
-    ) { Column(
-        modifier = Modifier.fillMaxSize().padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
+        Column(
+            modifier = Modifier.fillMaxWidth().verticalScroll(scrollState).padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
         Text(if (viewModel.isEditing) "Edit Music Idea" else "Save New Music Idea")
 
         OutlinedTextField(
@@ -84,5 +92,10 @@ fun SaveView(viewModel: SaveViewModel) {
         ) {
             Text(if (viewModel.isEditing) "Update" else "Save")
         }
-    } }
+        }
+        VerticalScrollbar(
+            modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight(),
+            adapter = rememberScrollbarAdapter(scrollState)
+        )
+    }
 }
