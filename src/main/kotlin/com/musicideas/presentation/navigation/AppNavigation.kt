@@ -1,13 +1,18 @@
 package com.musicideas.presentation.navigation
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.pointer.PointerButton
+import androidx.compose.ui.input.pointer.PointerEventType
+import androidx.compose.ui.input.pointer.onPointerEvent
 import com.musicideas.core.model.MusicIdea
 import com.musicideas.presentation.screens.cloudstorage.CloudStorageView
 import com.musicideas.presentation.screens.library.LibraryView
@@ -24,6 +29,7 @@ sealed class Screen(val route: String, val title: String, val icon: ImageVector)
     data object Edit : Screen("edit", "Edit Recording", Icons.Filled.Edit)
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun AppNavigation(mainViewModel: MainViewModel) {
     var currentScreen by remember { mutableStateOf<Screen>(Screen.Record) }
@@ -74,41 +80,71 @@ fun AppNavigation(mainViewModel: MainViewModel) {
         }
     }
 
-    Scaffold(
-        topBar = { TopAppBar(title = { Text(currentScreen.title) }) },
-        bottomBar = {
-            BottomNavigation {
-                listOf(Screen.Record, Screen.Library, Screen.Settings, Screen.CloudStorage).forEach { screen ->
-                    BottomNavigationItem(
-                        icon = { Icon(screen.icon, contentDescription = screen.title) },
-                        label = { Text(screen.title) },
-                        selected = currentScreen == screen,
-                        onClick = { currentScreen = screen }
-                    )
+    val onBack: (() -> Unit)? = when (currentScreen) {
+        Screen.Save -> ({
+            pendingSave = null
+            currentScreen = Screen.Record
+        })
+        Screen.Edit -> ({
+            musicIdeaToEdit = null
+            audioDataForEdit = null
+            currentScreen = Screen.Library
+        })
+        else -> null
+    }
+
+    Box(
+        modifier = Modifier.fillMaxSize().onPointerEvent(PointerEventType.Press) { event ->
+            if (event.button == PointerButton.Back) onBack?.invoke()
+        }
+    ) {
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = { Text(currentScreen.title) },
+                    navigationIcon = onBack?.let { back ->
+                        {
+                            IconButton(onClick = back) {
+                                Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
+                            }
+                        }
+                    }
+                )
+            },
+            bottomBar = {
+                BottomNavigation {
+                    listOf(Screen.Record, Screen.Library, Screen.Settings, Screen.CloudStorage).forEach { screen ->
+                        BottomNavigationItem(
+                            icon = { Icon(screen.icon, contentDescription = screen.title) },
+                            label = { Text(screen.title) },
+                            selected = currentScreen == screen,
+                            onClick = { currentScreen = screen }
+                        )
+                    }
                 }
             }
-        }
-    ) { paddingValues ->
-        Box(modifier = Modifier.padding(paddingValues)) {
-            when (currentScreen) {
-                Screen.Record -> RecordView(
-                    viewModel = recordViewModel,
-                    onSave = { audioData, tempo ->
-                        pendingSave = Pair(audioData, tempo)
-                        currentScreen = Screen.Save
-                    }
-                )
-                Screen.Library -> LibraryView(
-                    viewModel = libraryViewModel,
-                    onEdit = { musicIdea ->
-                        musicIdeaToEdit = musicIdea
-                        currentScreen = Screen.Edit
-                    }
-                )
-                Screen.Settings -> SettingsView(settingsViewModel)
-                Screen.CloudStorage -> CloudStorageView(cloudStorageViewModel)
-                Screen.Save -> saveViewModel?.let { SaveView(it) }
-                Screen.Edit -> editViewModel?.let { SaveView(it) }
+        ) { paddingValues ->
+            Box(modifier = Modifier.padding(paddingValues)) {
+                when (currentScreen) {
+                    Screen.Record -> RecordView(
+                        viewModel = recordViewModel,
+                        onSave = { audioData, tempo ->
+                            pendingSave = Pair(audioData, tempo)
+                            currentScreen = Screen.Save
+                        }
+                    )
+                    Screen.Library -> LibraryView(
+                        viewModel = libraryViewModel,
+                        onEdit = { musicIdea ->
+                            musicIdeaToEdit = musicIdea
+                            currentScreen = Screen.Edit
+                        }
+                    )
+                    Screen.Settings -> SettingsView(settingsViewModel)
+                    Screen.CloudStorage -> CloudStorageView(cloudStorageViewModel)
+                    Screen.Save -> saveViewModel?.let { SaveView(it) }
+                    Screen.Edit -> editViewModel?.let { SaveView(it) }
+                }
             }
         }
     }
