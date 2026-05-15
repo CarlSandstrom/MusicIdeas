@@ -1,7 +1,9 @@
 package com.musicideas.presentation.components
 
-import androidx.compose.animation.*
-import androidx.compose.foundation.background
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.hoverable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -16,7 +18,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.musicideas.core.model.MusicIdea
 
@@ -47,10 +48,10 @@ fun MusicIdeaItem(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp)
-            .clip(RoundedCornerShape(8.dp))
-            .background(backgroundColor)
             .clickable { onSelect() }
             .hoverable(interactionSource),
+        shape = RoundedCornerShape(8.dp),
+        colors = CardDefaults.cardColors(containerColor = backgroundColor),
         elevation = CardDefaults.cardElevation(
             defaultElevation = if (isHovered || isSelected) 8.dp else 2.dp
         )
@@ -80,21 +81,16 @@ fun MusicIdeaItem(
 
                 AnimatedVisibility(
                     visible = isHovered,
-                    enter = fadeIn() + expandHorizontally(),
-                    exit = fadeOut() + shrinkHorizontally()
+                    enter = fadeIn(animationSpec = tween(100)),
+                    exit = fadeOut(animationSpec = tween(100))
                 ) {
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        // Play/Stop button with icon and color change
                         IconButton(
                             onClick = {
-                                println("Play/Stop button clicked for ${musicIdea.id}, current isPlaying: $isPlaying")
-                                if (isPlaying)
-                                    onStop()
-                                else
-                                    onPlay()
+                                if (isPlaying) onStop() else onPlay()
                             }
                         ) {
                             Icon(
