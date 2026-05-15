@@ -6,7 +6,12 @@ import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -82,6 +87,20 @@ fun SaveView(viewModel: SaveViewModel) {
             label = { Text("Custom Tags (comma-separated)") },
             modifier = Modifier.fillMaxWidth()
         )
+
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text("Rating: ", style = MaterialTheme.typography.bodyMedium)
+            for (i in 1..5) {
+                IconButton(onClick = { viewModel.rating = if (viewModel.rating == i) 0 else i }) {
+                    Icon(
+                        imageVector = if (i <= viewModel.rating) Icons.Filled.Star else Icons.Outlined.Star,
+                        contentDescription = "$i stars",
+                        tint = if (i <= viewModel.rating) MaterialTheme.colorScheme.primary
+                               else MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+        }
 
         viewModel.saveError?.let {
             Text(it, color = MaterialTheme.colorScheme.error)

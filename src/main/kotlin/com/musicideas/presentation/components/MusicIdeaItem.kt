@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -77,6 +78,18 @@ fun MusicIdeaItem(
                         "Tempo: ${if (musicIdea.metadata.tempo == 0) "None specified" else "${musicIdea.metadata.tempo} BPM"}",
                         style = MaterialTheme.typography.bodyMedium
                     )
+                    if (musicIdea.metadata.rating > 0) {
+                        Row {
+                            repeat(5) { i ->
+                                Icon(
+                                    imageVector = if (i < musicIdea.metadata.rating) Icons.Filled.Star else Icons.Outlined.Star,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(16.dp),
+                                    tint = MaterialTheme.colorScheme.primary
+                                )
+                            }
+                        }
+                    }
                 }
 
                 AnimatedVisibility(

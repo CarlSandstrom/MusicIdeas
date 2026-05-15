@@ -28,6 +28,7 @@ class SaveViewModel(
     var ideaType by mutableStateOf(existingMusicIdea?.metadata?.ideaType ?: IdeaType.RIFF)
     var customTags by mutableStateOf(existingMusicIdea?.metadata?.tags?.joinToString(",") ?: "")
     var tempoString by mutableStateOf(defaultTempo.toString())
+    var rating by mutableStateOf(existingMusicIdea?.metadata?.rating ?: 0)
 
     val isEditing = existingMusicIdea != null
 
@@ -53,6 +54,7 @@ class SaveViewModel(
                 tempo = tempo,
                 ideaType = ideaType,
                 tags = customTags.split(",").map { it.trim() }.filter { it.isNotEmpty() },
+                rating = rating,
                 existingId = id
             )
             repository.save(musicIdea)
