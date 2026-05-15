@@ -7,6 +7,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onPreviewKeyEvent
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.unit.dp
 import com.musicideas.core.model.Genre
 import com.musicideas.core.model.IdeaType
@@ -15,7 +20,14 @@ import com.musicideas.presentation.components.ComboBox
 
 @Composable
 fun SaveView(viewModel: SaveViewModel) {
-    Column(
+    Box(
+        modifier = Modifier.fillMaxSize().onPreviewKeyEvent { keyEvent ->
+            if (keyEvent.key == Key.Enter && keyEvent.type == KeyEventType.KeyDown) {
+                viewModel.save()
+                true
+            } else false
+        }
+    ) { Column(
         modifier = Modifier.fillMaxSize().padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
@@ -72,5 +84,5 @@ fun SaveView(viewModel: SaveViewModel) {
         ) {
             Text(if (viewModel.isEditing) "Update" else "Save")
         }
-    }
+    } }
 }
