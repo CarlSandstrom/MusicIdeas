@@ -41,12 +41,15 @@ class MainViewModel(
         existingMusicIdea: MusicIdea? = null,
         onSaveComplete: () -> Unit
     ): SaveViewModel {
+        val settings = settingsRepository.read()
         return SaveViewModel(
             audioData = audioData,
             repository = musicIdeaRepository,
             initialTempo = initialTempo,
             existingMusicIdea = existingMusicIdea,
-            onSaveComplete = onSaveComplete
+            onSaveComplete = onSaveComplete,
+            defaultGenre = settings.defaultGenre,
+            defaultInstrument = settings.defaultInstrument
         )
     }
 }

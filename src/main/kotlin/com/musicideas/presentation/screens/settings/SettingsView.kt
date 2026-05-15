@@ -8,6 +8,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.musicideas.core.model.AudioQuality
+import com.musicideas.core.model.Genre
+import com.musicideas.core.model.Instrument
 import com.musicideas.presentation.components.ComboBox
 
 @Composable
@@ -35,6 +37,20 @@ fun SettingsView(viewModel: SettingsViewModel) {
             onValueChange = { viewModel.onSaveLocationChanged(it) },
             label = { Text("Save Location") },
             modifier = Modifier.fillMaxWidth()
+        )
+
+        ComboBox(
+            label = "Default Genre",
+            options = Genre.entries.toList(),
+            selectedOption = viewModel.defaultGenre,
+            onOptionSelected = { viewModel.onDefaultGenreSelected(it) }
+        )
+
+        ComboBox(
+            label = "Default Instrument",
+            options = Instrument.entries.toList(),
+            selectedOption = viewModel.defaultInstrument,
+            onOptionSelected = { viewModel.onDefaultInstrumentSelected(it) }
         )
 
         Row(

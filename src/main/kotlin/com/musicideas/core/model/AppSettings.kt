@@ -7,7 +7,9 @@ data class AppSettings(
     val selectedInputDevice: String = "",
     val audioQuality: AudioQuality = AudioQuality.HIGH,
     val saveLocation: String = System.getProperty("user.home") + "/MusicIdeas",
-    val darkMode: Boolean = false
+    val darkMode: Boolean = false,
+    val defaultGenre: Genre = Genre.ROCK,
+    val defaultInstrument: Instrument = Instrument.GUITAR
 )
 
 @Serializable

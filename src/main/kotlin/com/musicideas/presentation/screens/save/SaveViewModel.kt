@@ -17,12 +17,14 @@ class SaveViewModel(
     private val repository: MusicIdeaRepository,
     private val onSaveComplete: () -> Unit,
     existingMusicIdea: MusicIdea? = null,
-    initialTempo: Int = 120
+    initialTempo: Int = 120,
+    defaultGenre: Genre = Genre.ROCK,
+    defaultInstrument: Instrument = Instrument.GUITAR
 ) : ViewModel() {
     var id by mutableStateOf(existingMusicIdea?.id ?: UUID.randomUUID().toString())
     var name by mutableStateOf(existingMusicIdea?.metadata?.name ?: "")
-    var genre by mutableStateOf(existingMusicIdea?.metadata?.genre ?: Genre.ROCK)
-    var instrument by mutableStateOf(existingMusicIdea?.metadata?.instrument ?: Instrument.GUITAR)
+    var genre by mutableStateOf(existingMusicIdea?.metadata?.genre ?: defaultGenre)
+    var instrument by mutableStateOf(existingMusicIdea?.metadata?.instrument ?: defaultInstrument)
     private val defaultTempo = existingMusicIdea?.metadata?.tempo ?: initialTempo
     var tempo by mutableStateOf(defaultTempo)
     var ideaType by mutableStateOf(existingMusicIdea?.metadata?.ideaType ?: IdeaType.RIFF)
