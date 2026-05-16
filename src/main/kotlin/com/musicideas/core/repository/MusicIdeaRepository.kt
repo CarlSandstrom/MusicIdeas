@@ -1,6 +1,7 @@
 package com.musicideas.core.repository
 
 import com.musicideas.core.model.MusicIdea
+import java.io.File
 
 interface MusicIdeaRepository {
     suspend fun save(musicIdea: MusicIdea): Result<Unit>
@@ -8,4 +9,5 @@ interface MusicIdeaRepository {
     suspend fun getAll(): Result<List<MusicIdea>>
     suspend fun delete(id: String): Result<Unit>
     suspend fun exportToMp3(musicIdea: MusicIdea, outputPath: String): Result<Unit>
+    fun getAudioFile(id: String): File?
 }

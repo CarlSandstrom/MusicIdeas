@@ -13,6 +13,7 @@ import com.musicideas.core.repository.ExportDialog
 import com.musicideas.core.repository.MusicIdeaRepository
 import com.musicideas.presentation.common.ViewModel
 import kotlinx.coroutines.launch
+import java.io.File
 
 data class FilterState(
     val selectedGenre: Genre? = null,
@@ -134,69 +135,34 @@ class LibraryViewModel(
     }
 
     private var _playingMusicIdeaId by mutableStateOf<String?>(null)
-    val playingMusicIdeaId: String?
-        get() {
-            println("Getting playingMusicIdeaId: $_playingMusicIdeaId")
-            return _playingMusicIdeaId
-        }
+    val playingMusicIdeaId: String? get() = _playingMusicIdeaId
 
     fun playMusicIdea(id: String) {
         viewModelScope.launch {
-            println("Starting playback for id: $id")
-            // If already playing this idea, stop it
-            if (_playingMusicIdeaId == id) {
-                println("Already playing this idea, stopping")
-                stopPlayback()
-                return@launch
-            }
+            if (_playingMusicIdeaId == id) { stopPlayback(); return@launch }
+            if (_playingMusicIdeaId != null) stopPlayback()
 
-            // If playing something else, stop it first
-            if (_playingMusicIdeaId != null) {
-                println("Stopping previous playback")
-                stopPlayback()
-            }
-
-            val musicIdea = musicIdeas.find { it.id == id }
-            if (musicIdea != null) {
-                try {
-                    val audioData = musicIdea.audioDataProvider()
-                    if (audioData.isEmpty()) {
-                        println("Audio data is empty for music idea: $id")
-                        return@launch
-                    }
-
-                    println("Setting playingMusicIdeaId to: $id")
-                    _playingMusicIdeaId = id
-
-                    audioRepository.playAudio(audioData)
-                        .onSuccess {
-                            println("Successfully started playback for id: $id")
-                        }
-                        .onFailure { error ->
-                            println("Failed to start playback: ${error.message}")
-                            _playingMusicIdeaId = null
-                        }
-                } catch (e: Exception) {
-                    println("Error loading audio data: ${e.message}")
-                    _playingMusicIdeaId = null
-                }
+            val musicIdea = musicIdeas.find { it.id == id } ?: return@launch
+            try {
+                val audioData = musicIdea.audioDataProvider()
+                if (audioData.isEmpty()) return@launch
+                _playingMusicIdeaId = id
+                audioRepository.playAudio(audioData)
+                    .onFailure { _playingMusicIdeaId = null }
+            } catch (e: Exception) {
+                _playingMusicIdeaId = null
             }
         }
     }
 
     fun stopPlayback() {
         viewModelScope.launch {
-            println("Stopping playback, current id: $_playingMusicIdeaId")
             audioRepository.stopPlayback()
             _playingMusicIdeaId = null
-            println("Playback stopped, id cleared")
         }
     }
 
-    fun shareMusicIdea(id: String) {
-        // Implement sharing functionality
-        // This could open a dialog or handle the sharing process
-    }
+    fun getAudioFile(id: String): File? = musicIdeaRepository.getAudioFile(id)
 
     fun promptDeleteMusicIdea(id: String) {
         musicIdeaToDelete = id

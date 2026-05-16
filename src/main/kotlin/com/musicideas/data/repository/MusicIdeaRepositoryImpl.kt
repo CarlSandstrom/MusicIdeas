@@ -6,6 +6,7 @@ import com.musicideas.data.audio.encoding.Mp3Encoder
 import com.musicideas.data.storage.MusicIdeaStorage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.io.File
 
 class MusicIdeaRepositoryImpl(
     private val localDataSource: MusicIdeaStorage,
@@ -40,4 +41,6 @@ class MusicIdeaRepositoryImpl(
             mp3Encoder.encode(musicIdea, outputPath)
         }
     }
+
+    override fun getAudioFile(id: String): File? = localDataSource.getAudioFile(id)
 }

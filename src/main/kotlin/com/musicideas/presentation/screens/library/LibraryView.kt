@@ -82,13 +82,13 @@ fun LibraryView(
                     items(viewModel.filteredMusicIdeas) { musicIdea ->
                         MusicIdeaItem(
                             musicIdea = musicIdea,
+                            audioFile = viewModel.getAudioFile(musicIdea.id),
                             isSelected = musicIdea.id == viewModel.selectedMusicIdeaId,
                             isPlaying = musicIdea.id == viewModel.playingMusicIdeaId,
                             onSelect = { viewModel.selectMusicIdea(musicIdea.id) },
                             onPlay = { viewModel.playMusicIdea(musicIdea.id) },
                             onDelete = { viewModel.promptDeleteMusicIdea(musicIdea.id) },
                             onStop = { viewModel.stopPlayback() },
-                            onShare = { viewModel.shareMusicIdea(musicIdea.id) },
                             onEdit = { viewModel.editMusicIdea(musicIdea, onEdit) },
                             onExport = { viewModel.exportMusicIdea(musicIdea.id) }
                         )

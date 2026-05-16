@@ -51,4 +51,9 @@ class MusicIdeaStorageFileSystem(
         File(audioDir, "$id.raw").takeIf { it.exists() }?.delete()
         File(metadataDir, "$id.json").takeIf { it.exists() }?.delete()
     }
+
+    override fun getAudioFile(id: String): File? {
+        val file = File(audioDir, "$id.mp3")
+        return if (file.exists()) file else null
+    }
 }

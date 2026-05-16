@@ -4,7 +4,10 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.draganddrop.dragAndDropSource
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.hoverable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsHoveredAsState
@@ -17,19 +20,26 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draganddrop.DragAndDropTransferAction
+import androidx.compose.ui.draganddrop.DragAndDropTransferData
+import androidx.compose.ui.draganddrop.DragAndDropTransferable
 import androidx.compose.ui.unit.dp
 import com.musicideas.core.model.MusicIdea
+import java.awt.datatransfer.DataFlavor
+import java.awt.datatransfer.Transferable
+import java.io.File
 
-@OptIn(ExperimentalLayoutApi::class)
+@OptIn(ExperimentalLayoutApi::class, ExperimentalFoundationApi::class, ExperimentalComposeUiApi::class)
 @Composable
 fun MusicIdeaItem(
     musicIdea: MusicIdea,
+    audioFile: File? = null,
     isSelected: Boolean = false,
     onSelect: () -> Unit = {},
     onPlay: () -> Unit = {},
     onStop: () -> Unit = {},
-    onShare: () -> Unit = {},
     onDelete: () -> Unit = {},
     onEdit: () -> Unit = {},
     onExport: () -> Unit = {},
@@ -49,7 +59,34 @@ fun MusicIdeaItem(
             .fillMaxWidth()
             .padding(vertical = 8.dp)
             .clickable { onSelect() }
-            .hoverable(interactionSource),
+            .hoverable(interactionSource)
+            .then(
+                if (audioFile != null) {
+                    val file = audioFile
+                    Modifier.dragAndDropSource(drawDragDecoration = {}) {
+                        detectDragGestures(
+                            onDragStart = {
+                                startTransfer(
+                                    DragAndDropTransferData(
+                                        transferable = DragAndDropTransferable(
+                                            object : Transferable {
+                                                override fun getTransferDataFlavors() = arrayOf(DataFlavor.javaFileListFlavor)
+                                                override fun isDataFlavorSupported(flavor: DataFlavor) = flavor == DataFlavor.javaFileListFlavor
+                                                override fun getTransferData(flavor: DataFlavor): Any = listOf(file)
+                                            }
+                                        ),
+                                        // Compose 1.7.3 calls exportAsDrag with ACTION_MOVE(2); without Move
+                                        // in supportedActions, getSourceActions() returns ACTION_COPY(1) and
+                                        // 1 & 2 = 0 = NONE, silently aborting the drag.
+                                        supportedActions = listOf(DragAndDropTransferAction.Copy, DragAndDropTransferAction.Move)
+                                    )
+                                )
+                            },
+                            onDrag = { _, _ -> }
+                        )
+                    }
+                } else Modifier
+            ),
         shape = RoundedCornerShape(8.dp),
         colors = CardDefaults.cardColors(containerColor = backgroundColor),
         elevation = CardDefaults.cardElevation(
@@ -109,16 +146,6 @@ fun MusicIdeaItem(
                                 imageVector = if (isPlaying) Icons.Default.Stop else Icons.Default.PlayArrow,
                                 contentDescription = if (isPlaying) "Stop" else "Play",
                                 tint = if (isPlaying) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
-                            )
-                        }
-
-                        IconButton(
-                            onClick = onShare,
-                            enabled = !isPlaying
-                        ) {
-                            Icon(
-                                Icons.Default.Share,
-                                contentDescription = "Share"
                             )
                         }
 
