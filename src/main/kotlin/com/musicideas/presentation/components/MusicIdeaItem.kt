@@ -66,13 +66,19 @@ fun MusicIdeaItem(
                     Modifier.dragAndDropSource(drawDragDecoration = {}) {
                         detectDragGestures(
                             onDragStart = {
+                                val sanitizedName = musicIdea.metadata.name
+                                    .replace(Regex("[\\\\/:*?\"<>|]"), "_")
+                                    .trim()
+                                    .ifEmpty { "recording" }
+                                val tempFile = File(System.getProperty("java.io.tmpdir"), "$sanitizedName.mp3")
+                                file.copyTo(tempFile, overwrite = true)
                                 startTransfer(
                                     DragAndDropTransferData(
                                         transferable = DragAndDropTransferable(
                                             object : Transferable {
                                                 override fun getTransferDataFlavors() = arrayOf(DataFlavor.javaFileListFlavor)
                                                 override fun isDataFlavorSupported(flavor: DataFlavor) = flavor == DataFlavor.javaFileListFlavor
-                                                override fun getTransferData(flavor: DataFlavor): Any = listOf(file)
+                                                override fun getTransferData(flavor: DataFlavor): Any = listOf(tempFile)
                                             }
                                         ),
                                         // Compose 1.7.3 calls exportAsDrag with ACTION_MOVE(2); without Move
