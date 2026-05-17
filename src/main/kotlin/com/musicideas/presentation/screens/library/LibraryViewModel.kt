@@ -19,10 +19,11 @@ data class FilterState(
     val selectedGenre: Genre? = null,
     val selectedInstrument: Instrument? = null,
     val selectedIdeaType: IdeaType? = null,
-    var timeRange: ClosedRange<Long> = 0L..System.currentTimeMillis(), // Current selection range
-    var fullTimeRange: ClosedRange<Long> = 0L..System.currentTimeMillis(), // Total available range
+    var timeRange: ClosedRange<Long> = 0L..System.currentTimeMillis(),
+    var fullTimeRange: ClosedRange<Long> = 0L..System.currentTimeMillis(),
     val tagSearchQuery: String = "",
-    val selectedTags: Set<String> = emptySet()
+    val selectedTags: Set<String> = emptySet(),
+    val minRating: Int = 0
 )
 
 class LibraryViewModel(
@@ -69,6 +70,11 @@ class LibraryViewModel(
         // Filter by time range
         filtered = filtered.filter {
             it.metadata.createdAt in _filterState.timeRange.start.._filterState.timeRange.endInclusive
+        }
+
+        // Filter by minimum rating
+        if (_filterState.minRating > 0) {
+            filtered = filtered.filter { it.metadata.rating >= _filterState.minRating }
         }
 
         // Filter by tags (from both search and checkboxes)

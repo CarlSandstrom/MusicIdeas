@@ -13,7 +13,8 @@ import com.musicideas.presentation.common.ViewModel
 
 class SettingsViewModel(
     private val audioRepository: AudioRepository,
-    private val settingsRepository: SettingsRepository
+    private val settingsRepository: SettingsRepository,
+    private val onDarkModeToggled: (Boolean) -> Unit = {}
 ) : ViewModel() {
 
     var audioQuality by mutableStateOf(AudioQuality.HIGH)
@@ -67,6 +68,7 @@ class SettingsViewModel(
     fun onDarkModeChanged(enabled: Boolean) {
         darkMode = enabled
         saveSettings()
+        onDarkModeToggled(enabled)
     }
 
     fun onDefaultGenreSelected(genre: Genre) {

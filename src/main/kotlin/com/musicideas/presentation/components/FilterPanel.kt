@@ -2,8 +2,12 @@ package com.musicideas.presentation.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -24,6 +28,8 @@ fun FilterPanel(
     timeRange: ClosedRange<Long>,
     fullTimeRange: ClosedRange<Long>,
     onTimeRangeChange: (ClosedRange<Long>) -> Unit,
+    minRating: Int = 0,
+    onMinRatingChange: (Int) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -58,6 +64,9 @@ fun FilterPanel(
             onOptionSelected = onIdeaTypeSelected,
             includeAny = true
         )
+
+        // Rating Filter
+        RatingFilter(minRating = minRating, onMinRatingChange = onMinRatingChange)
 
         // Time Range Filter
         TimeRangeSlider(
@@ -107,6 +116,32 @@ fun <T> FilterDropdown(
                     expanded = false
                 }) {
                     Text(option.toString())
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun RatingFilter(
+    minRating: Int,
+    onMinRatingChange: (Int) -> Unit
+) {
+    Column {
+        Text("Min Rating", style = MaterialTheme.typography.subtitle1)
+        Row(horizontalArrangement = Arrangement.spacedBy(0.dp)) {
+            (1..5).forEach { star ->
+                IconButton(
+                    onClick = { onMinRatingChange(if (star == minRating) 0 else star) },
+                    modifier = Modifier.size(36.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Star,
+                        contentDescription = "Minimum $star stars",
+                        modifier = Modifier.size(20.dp),
+                        tint = if (star <= minRating) MaterialTheme.colors.primary
+                               else MaterialTheme.colors.onSurface.copy(alpha = 0.25f)
+                    )
                 }
             }
         }

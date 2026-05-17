@@ -1,5 +1,8 @@
 package com.musicideas.presentation.navigation
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import com.musicideas.core.model.MusicIdea
 import com.musicideas.core.repository.AudioRepository
 import com.musicideas.core.repository.ExportDialog
@@ -19,6 +22,9 @@ class MainViewModel(
     private val settingsRepository: SettingsRepository
 ) : ViewModel() {
 
+    var darkMode by mutableStateOf(settingsRepository.read().darkMode)
+        private set
+
     fun createRecordViewModel(): RecordViewModel {
         return RecordViewModel(audioRepository)
     }
@@ -32,7 +38,7 @@ class MainViewModel(
     }
 
     fun createSettingsViewModel(): SettingsViewModel {
-        return SettingsViewModel(audioRepository, settingsRepository)
+        return SettingsViewModel(audioRepository, settingsRepository, onDarkModeToggled = { darkMode = it })
     }
 
     fun createSaveViewModel(

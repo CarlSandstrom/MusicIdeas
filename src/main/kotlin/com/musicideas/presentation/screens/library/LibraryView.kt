@@ -50,7 +50,9 @@ fun LibraryView(
                         onIdeaTypeSelected = { viewModel.updateFilter { copy(selectedIdeaType = it) } },
                         timeRange = viewModel.filterState.timeRange,
                         fullTimeRange = viewModel.filterState.fullTimeRange,
-                        onTimeRangeChange = { viewModel.updateFilter { copy(timeRange = it) } }
+                        onTimeRangeChange = { viewModel.updateFilter { copy(timeRange = it) } },
+                        minRating = viewModel.filterState.minRating,
+                        onMinRatingChange = { viewModel.updateFilter { copy(minRating = it) } }
                     )
 
                     TagFilterInput(
