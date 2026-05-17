@@ -1,9 +1,7 @@
 package com.musicideas.presentation.components
 
-import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.draganddrop.dragAndDropSource
@@ -11,6 +9,7 @@ import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.hoverable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsHoveredAsState
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -19,6 +18,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -47,6 +47,10 @@ fun MusicIdeaItem(
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isHovered by interactionSource.collectIsHoveredAsState()
+    val buttonAlpha by animateFloatAsState(
+        targetValue = if (isHovered) 1f else 0f,
+        animationSpec = tween(100)
+    )
 
     val backgroundColor = when {
         isSelected -> MaterialTheme.colorScheme.primaryContainer
@@ -102,12 +106,8 @@ fun MusicIdeaItem(
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column(modifier = Modifier.weight(1f)) {
+            Box(modifier = Modifier.fillMaxWidth()) {
+                Column {
                     Text(
                         musicIdea.metadata.name,
                         style = MaterialTheme.typography.headlineSmall
@@ -134,57 +134,59 @@ fun MusicIdeaItem(
                     }
                 }
 
-                AnimatedVisibility(
-                    visible = isHovered,
-                    enter = fadeIn(animationSpec = tween(100)),
-                    exit = fadeOut(animationSpec = tween(100))
-                ) {
+                Box(modifier = Modifier.align(Alignment.CenterEnd).alpha(buttonAlpha)) {
                     Row(
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        IconButton(
-                            onClick = {
-                                if (isPlaying) onStop() else onPlay()
+                            modifier = Modifier
+                                .background(
+                                    color = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f),
+                                    shape = RoundedCornerShape(8.dp)
+                                )
+                                .padding(horizontal = 4.dp),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            IconButton(
+                                onClick = {
+                                    if (isPlaying) onStop() else onPlay()
+                                }
+                            ) {
+                                Icon(
+                                    imageVector = if (isPlaying) Icons.Default.Stop else Icons.Default.PlayArrow,
+                                    contentDescription = if (isPlaying) "Stop" else "Play",
+                                    tint = if (isPlaying) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
+                                )
                             }
-                        ) {
-                            Icon(
-                                imageVector = if (isPlaying) Icons.Default.Stop else Icons.Default.PlayArrow,
-                                contentDescription = if (isPlaying) "Stop" else "Play",
-                                tint = if (isPlaying) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
-                            )
-                        }
 
-                        IconButton(
-                            onClick = onExport,
-                            enabled = !isPlaying
-                        ) {
-                            Icon(
-                                Icons.Default.Save,
-                                contentDescription = "Export"
-                            )
-                        }
+                            IconButton(
+                                onClick = onExport,
+                                enabled = !isPlaying
+                            ) {
+                                Icon(
+                                    Icons.Default.Save,
+                                    contentDescription = "Export"
+                                )
+                            }
 
-                        IconButton(
-                            onClick = onDelete,
-                            enabled = !isPlaying
-                        ) {
-                            Icon(
-                                Icons.Default.Delete,
-                                contentDescription = "Delete"
-                            )
-                        }
+                            IconButton(
+                                onClick = onDelete,
+                                enabled = !isPlaying
+                            ) {
+                                Icon(
+                                    Icons.Default.Delete,
+                                    contentDescription = "Delete"
+                                )
+                            }
 
-                        IconButton(
-                            onClick = onEdit,
-                            enabled = !isPlaying
-                        ) {
-                            Icon(
-                                Icons.Default.Edit,
-                                contentDescription = "Edit"
-                            )
+                            IconButton(
+                                onClick = onEdit,
+                                enabled = !isPlaying
+                            ) {
+                                Icon(
+                                    Icons.Default.Edit,
+                                    contentDescription = "Edit"
+                                )
+                            }
                         }
-                    }
                 }
             }
 
