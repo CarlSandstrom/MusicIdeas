@@ -88,6 +88,15 @@ fun SaveView(viewModel: SaveViewModel) {
             modifier = Modifier.fillMaxWidth()
         )
 
+        OutlinedTextField(
+            value = viewModel.notes,
+            onValueChange = { viewModel.notes = it },
+            label = { Text("Notes") },
+            modifier = Modifier.fillMaxWidth(),
+            maxLines = 5,
+            minLines = 3
+        )
+
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text("Rating: ", style = MaterialTheme.typography.bodyMedium)
             for (i in 1..5) {

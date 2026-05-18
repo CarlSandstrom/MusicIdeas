@@ -16,7 +16,8 @@ private data class MusicIdeaMetadataDto(
     val tags: List<String>,
     val rating: Int = 0,
     val sampleRate: Int = 44100,
-    val createdAt: Long
+    val createdAt: Long,
+    val notes: String = ""
 )
 
 fun serializeMetadata(musicIdea: MusicIdea): String {
@@ -29,7 +30,8 @@ fun serializeMetadata(musicIdea: MusicIdea): String {
         tags = musicIdea.metadata.tags,
         rating = musicIdea.metadata.rating,
         sampleRate = musicIdea.metadata.sampleRate,
-        createdAt = musicIdea.metadata.createdAt
+        createdAt = musicIdea.metadata.createdAt,
+        notes = musicIdea.metadata.notes
     )
     return Json.encodeToString(MusicIdeaMetadataDto.serializer(), dto)
 }
@@ -68,7 +70,8 @@ fun deserializeMusicIdea(
             tags = metadata.tags,
             rating = metadata.rating,
             sampleRate = metadata.sampleRate,
-            createdAt = metadata.createdAt
+            createdAt = metadata.createdAt,
+            notes = metadata.notes
         ),
         audioDataProvider = audioDataProvider
     )

@@ -19,7 +19,8 @@ data class MusicIdea(
             tags: List<String>,
             rating: Int = 0,
             sampleRate: Int = 44100,
-            existingId: String? = null
+            existingId: String? = null,
+            notes: String = ""
         ): MusicIdea {
             return MusicIdea(
                 id = existingId ?: UUID.randomUUID().toString(),
@@ -32,7 +33,8 @@ data class MusicIdea(
                     tags = tags,
                     rating = rating,
                     sampleRate = sampleRate,
-                    createdAt = System.currentTimeMillis()
+                    createdAt = System.currentTimeMillis(),
+                    notes = notes
                 ),
                 audioDataProvider = { audioData }
             )
@@ -49,7 +51,8 @@ data class MusicIdeaMetadata(
     val tags: List<String>,
     val rating: Int = 0,
     val sampleRate: Int = 44100,
-    val createdAt: Long = System.currentTimeMillis()
+    val createdAt: Long = System.currentTimeMillis(),
+    val notes: String = ""
 )
 
 enum class Genre {

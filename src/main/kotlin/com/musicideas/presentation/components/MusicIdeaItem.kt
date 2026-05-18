@@ -120,6 +120,15 @@ fun MusicIdeaItem(
                         "Tempo: ${if (musicIdea.metadata.tempo == 0) "None specified" else "${musicIdea.metadata.tempo} BPM"}",
                         style = MaterialTheme.typography.bodyMedium
                     )
+                    if (musicIdea.metadata.notes.isNotEmpty()) {
+                        Text(
+                            musicIdea.metadata.notes,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            maxLines = 2,
+                            overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                        )
+                    }
                     if (musicIdea.metadata.rating > 0) {
                         Row {
                             repeat(musicIdea.metadata.rating) {

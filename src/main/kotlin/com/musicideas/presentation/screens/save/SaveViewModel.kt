@@ -33,6 +33,7 @@ class SaveViewModel(
     var customTags by mutableStateOf(existingMusicIdea?.metadata?.tags?.joinToString(",") ?: "")
     var tempoString by mutableStateOf(defaultTempo.toString())
     var rating by mutableStateOf(existingMusicIdea?.metadata?.rating ?: 0)
+    var notes by mutableStateOf(existingMusicIdea?.metadata?.notes ?: "")
 
     private val sampleRate = existingMusicIdea?.metadata?.sampleRate ?: initialSampleRate
     val isEditing = existingMusicIdea != null
@@ -61,7 +62,8 @@ class SaveViewModel(
                 tags = customTags.split(",").map { it.trim() }.filter { it.isNotEmpty() },
                 rating = rating,
                 sampleRate = sampleRate,
-                existingId = id
+                existingId = id,
+                notes = notes
             )
             repository.save(musicIdea)
                 .onSuccess { onSaveComplete() }
