@@ -45,6 +45,11 @@ fun SettingsView(viewModel: SettingsViewModel) {
                 label = { Text("Save Location") },
                 modifier = Modifier.fillMaxWidth()
             )
+            Text(
+                "Restart required for storage location changes to take effect.",
+                style = androidx.compose.material3.MaterialTheme.typography.bodySmall,
+                color = androidx.compose.material3.MaterialTheme.colorScheme.onSurfaceVariant
+            )
 
             ComboBox(
                 label = "Default Genre",

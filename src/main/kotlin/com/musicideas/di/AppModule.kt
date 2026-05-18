@@ -35,7 +35,7 @@ val appModule = module {
     single { Mp3Decoder() }
     single<MusicIdeaStorage> {
         MusicIdeaStorageFileSystem(
-            baseDir = File(System.getProperty("user.home"), "MusicIdeas"),
+            baseDir = File(get<SettingsRepository>().read().saveLocation),
             mp3Encoder = get(),
             mp3Decoder = get()
         )
