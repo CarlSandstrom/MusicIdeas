@@ -8,7 +8,11 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -75,31 +79,41 @@ fun LibraryView(
 
             // Right panel with filtered results
             val listState = rememberLazyListState()
-            Box(modifier = Modifier.weight(1f).fillMaxHeight()) {
-                LazyColumn(
-                    state = listState,
-                    modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    items(viewModel.filteredMusicIdeas) { musicIdea ->
-                        MusicIdeaItem(
-                            musicIdea = musicIdea,
-                            audioFile = viewModel.getAudioFile(musicIdea.id),
-                            isSelected = musicIdea.id == viewModel.selectedMusicIdeaId,
-                            isPlaying = musicIdea.id == viewModel.playingMusicIdeaId,
-                            onSelect = { viewModel.selectMusicIdea(musicIdea.id) },
-                            onPlay = { viewModel.playMusicIdea(musicIdea.id) },
-                            onDelete = { viewModel.promptDeleteMusicIdea(musicIdea.id) },
-                            onStop = { viewModel.stopPlayback() },
-                            onEdit = { viewModel.editMusicIdea(musicIdea, onEdit) },
-                            onExport = { viewModel.exportMusicIdea(musicIdea.id) }
-                        )
-                    }
-                }
-                VerticalScrollbar(
-                    modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight(),
-                    adapter = rememberScrollbarAdapter(listState)
+            Column(modifier = Modifier.weight(1f).fillMaxHeight(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                OutlinedTextField(
+                    value = viewModel.filterState.titleQuery,
+                    onValueChange = { viewModel.updateFilter { copy(titleQuery = it) } },
+                    modifier = Modifier.fillMaxWidth(),
+                    placeholder = { Text("Search by title…") },
+                    leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+                    singleLine = true
                 )
+                Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
+                    LazyColumn(
+                        state = listState,
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        items(viewModel.filteredMusicIdeas) { musicIdea ->
+                            MusicIdeaItem(
+                                musicIdea = musicIdea,
+                                audioFile = viewModel.getAudioFile(musicIdea.id),
+                                isSelected = musicIdea.id == viewModel.selectedMusicIdeaId,
+                                isPlaying = musicIdea.id == viewModel.playingMusicIdeaId,
+                                onSelect = { viewModel.selectMusicIdea(musicIdea.id) },
+                                onPlay = { viewModel.playMusicIdea(musicIdea.id) },
+                                onDelete = { viewModel.promptDeleteMusicIdea(musicIdea.id) },
+                                onStop = { viewModel.stopPlayback() },
+                                onEdit = { viewModel.editMusicIdea(musicIdea, onEdit) },
+                                onExport = { viewModel.exportMusicIdea(musicIdea.id) }
+                            )
+                        }
+                    }
+                    VerticalScrollbar(
+                        modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight(),
+                        adapter = rememberScrollbarAdapter(listState)
+                    )
+                }
             }
         }
     }

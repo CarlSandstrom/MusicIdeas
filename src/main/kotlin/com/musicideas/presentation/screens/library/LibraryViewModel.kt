@@ -26,7 +26,8 @@ data class FilterState(
     var fullTimeRange: ClosedRange<Long> = 0L..System.currentTimeMillis(),
     val tagSearchQuery: String = "",
     val selectedTags: Set<String> = emptySet(),
-    val minRating: Int = 0
+    val minRating: Int = 0,
+    val titleQuery: String = ""
 )
 
 class LibraryViewModel(
@@ -78,6 +79,13 @@ class LibraryViewModel(
         // Filter by minimum rating
         if (_filterState.minRating > 0) {
             filtered = filtered.filter { it.metadata.rating >= _filterState.minRating }
+        }
+
+        // Filter by title
+        if (_filterState.titleQuery.isNotEmpty()) {
+            filtered = filtered.filter {
+                it.metadata.name.contains(_filterState.titleQuery, ignoreCase = true)
+            }
         }
 
         // Filter by tags (from both search and checkboxes)
