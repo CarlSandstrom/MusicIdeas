@@ -214,7 +214,8 @@ class LibraryViewModel(
                     tempo = 0,
                     ideaType = IdeaType.UNKNOWN,
                     tags = emptyList(),
-                    sampleRate = sampleRate
+                    sampleRate = sampleRate,
+                    durationMs = audioData.size.toLong() * 1000L / 2 / sampleRate
                 )
                 musicIdeaRepository.save(idea)
             }

@@ -63,7 +63,8 @@ class SaveViewModel(
                 rating = rating,
                 sampleRate = sampleRate,
                 existingId = id,
-                notes = notes
+                notes = notes,
+                durationMs = audioData.size.toLong() * 1000L / 2 / sampleRate
             )
             repository.save(musicIdea)
                 .onSuccess { onSaveComplete() }

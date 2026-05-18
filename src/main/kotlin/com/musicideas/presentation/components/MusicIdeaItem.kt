@@ -117,7 +117,13 @@ fun MusicIdeaItem(
                         style = MaterialTheme.typography.bodySmall
                     )
                     Text(
-                        "Tempo: ${if (musicIdea.metadata.tempo == 0) "None specified" else "${musicIdea.metadata.tempo} BPM"}",
+                        buildString {
+                            append("Tempo: ${if (musicIdea.metadata.tempo == 0) "None specified" else "${musicIdea.metadata.tempo} BPM"}")
+                            if (musicIdea.metadata.durationMs > 0) {
+                                val totalSec = musicIdea.metadata.durationMs / 1000
+                                append("  ·  ${totalSec / 60}:${(totalSec % 60).toString().padStart(2, '0')}")
+                            }
+                        },
                         style = MaterialTheme.typography.bodyMedium
                     )
                     if (musicIdea.metadata.notes.isNotEmpty()) {
