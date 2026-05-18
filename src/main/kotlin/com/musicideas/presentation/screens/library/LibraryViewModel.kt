@@ -12,8 +12,11 @@ import com.musicideas.core.repository.AudioRepository
 import com.musicideas.core.repository.ExportDialog
 import com.musicideas.core.repository.MusicIdeaRepository
 import com.musicideas.presentation.common.ViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.File
+
+data class AudioImport(val name: String, val audioData: ByteArray, val sampleRate: Int)
 
 data class FilterState(
     val selectedGenre: Genre? = null,
@@ -153,7 +156,7 @@ class LibraryViewModel(
                 val audioData = musicIdea.audioDataProvider()
                 if (audioData.isEmpty()) return@launch
                 _playingMusicIdeaId = id
-                audioRepository.playAudio(audioData)
+                audioRepository.playAudio(audioData, musicIdea.metadata.sampleRate)
                     .onFailure { _playingMusicIdeaId = null }
             } catch (e: Exception) {
                 _playingMusicIdeaId = null
@@ -190,6 +193,25 @@ class LibraryViewModel(
     fun dismissDeleteDialog() {
         showDeleteConfirmation = false
         musicIdeaToDelete = null
+    }
+
+    fun importFiles(entries: List<AudioImport>) {
+        viewModelScope.launch(Dispatchers.IO) {
+            entries.forEach { (name, audioData, sampleRate) ->
+                val idea = MusicIdea.create(
+                    name = name,
+                    audioData = audioData,
+                    genre = Genre.UNKNOWN,
+                    instrument = Instrument.UNKNOWN,
+                    tempo = 0,
+                    ideaType = IdeaType.UNKNOWN,
+                    tags = emptyList(),
+                    sampleRate = sampleRate
+                )
+                musicIdeaRepository.save(idea)
+            }
+            loadMusicIdeas()
+        }
     }
 
     fun editMusicIdea(musicIdea: MusicIdea, onEdit: (MusicIdea) -> Unit) {

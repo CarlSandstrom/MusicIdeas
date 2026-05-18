@@ -22,6 +22,6 @@ fun main() = application {
         onCloseRequest = ::exitApplication,
         title = "Music Ideas"
     ) {
-        MainWindow(mainViewModel)
+        MainWindow(mainViewModel, window)
     }
 }

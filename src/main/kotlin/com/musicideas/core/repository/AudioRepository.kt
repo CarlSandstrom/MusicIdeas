@@ -7,7 +7,7 @@ interface AudioRepository {
     fun stopMonitoring()
     suspend fun startRecording(): Result<Unit>
     suspend fun stopRecording(): Result<ByteArray>
-    suspend fun playAudio(audioData: ByteArray): Result<Unit>
+    suspend fun playAudio(audioData: ByteArray, sampleRate: Int): Result<Unit>
     suspend fun stopPlayback(): Result<Unit>
     val recordingChunks: Flow<ByteArray>
     fun getInputLevel(): Float

@@ -44,6 +44,8 @@ class MainViewModel(
     fun createSaveViewModel(
         audioData: ByteArray,
         initialTempo: Int = 120,
+        initialName: String = "",
+        initialSampleRate: Int = 44100,
         existingMusicIdea: MusicIdea? = null,
         onSaveComplete: () -> Unit
     ): SaveViewModel {
@@ -52,6 +54,8 @@ class MainViewModel(
             audioData = audioData,
             repository = musicIdeaRepository,
             initialTempo = initialTempo,
+            initialName = initialName,
+            initialSampleRate = initialSampleRate,
             existingMusicIdea = existingMusicIdea,
             onSaveComplete = onSaveComplete,
             defaultGenre = settings.defaultGenre,

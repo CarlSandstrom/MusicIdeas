@@ -7,12 +7,16 @@ import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.ShortBuffer
 
+data class DecodedAudio(val pcmBytes: ByteArray, val sampleRate: Int)
+
 class Mp3Decoder {
-    fun decode(mp3Bytes: ByteArray): ByteArray {
-        val grabber = FFmpegFrameGrabber(ByteArrayInputStream(mp3Bytes))
+    fun decode(encodedBytes: ByteArray): DecodedAudio {
+        val grabber = FFmpegFrameGrabber(ByteArrayInputStream(encodedBytes))
         val output = ByteArrayOutputStream()
         try {
+            grabber.audioChannels = 1
             grabber.start()
+            val sampleRate = grabber.sampleRate
             var frame = grabber.grabSamples()
             while (frame != null) {
                 frame.samples?.forEach { buffer ->
@@ -27,10 +31,10 @@ class Mp3Decoder {
                 }
                 frame = grabber.grabSamples()
             }
+            return DecodedAudio(output.toByteArray(), sampleRate)
         } finally {
             grabber.stop()
             grabber.release()
         }
-        return output.toByteArray()
     }
 }

@@ -1,6 +1,5 @@
 package com.musicideas.data.audio.playback
 
-import com.musicideas.data.audio.config.AudioFormatConfig
 import kotlinx.coroutines.yield
 import java.io.ByteArrayInputStream
 import javax.sound.sampled.AudioInputStream
@@ -13,18 +12,19 @@ class JavaSoundPlayer : AudioPlayer {
 
     private var line: SourceDataLine? = null
 
-    override suspend fun play(audioData: ByteArray) {
+    override suspend fun play(audioData: ByteArray, sampleRate: Int) {
         if (isPlaying || audioData.isEmpty()) return
 
+        val format = javax.sound.sampled.AudioFormat(sampleRate.toFloat(), 16, 1, true, false)
         val audioInputStream = AudioInputStream(
             ByteArrayInputStream(audioData),
-            AudioFormatConfig.format,
-            audioData.size.toLong() / AudioFormatConfig.format.frameSize
+            format,
+            audioData.size.toLong() / format.frameSize
         )
 
         try {
-            line = AudioSystem.getSourceDataLine(AudioFormatConfig.format).apply {
-                open(AudioFormatConfig.format)
+            line = AudioSystem.getSourceDataLine(format).apply {
+                open(format)
                 start()
             }
             _isPlaying = true

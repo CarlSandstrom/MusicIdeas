@@ -18,11 +18,13 @@ class SaveViewModel(
     private val onSaveComplete: () -> Unit,
     existingMusicIdea: MusicIdea? = null,
     initialTempo: Int = 120,
+    initialName: String = "",
+    initialSampleRate: Int = 44100,
     defaultGenre: Genre = Genre.ROCK,
     defaultInstrument: Instrument = Instrument.GUITAR
 ) : ViewModel() {
     var id by mutableStateOf(existingMusicIdea?.id ?: UUID.randomUUID().toString())
-    var name by mutableStateOf(existingMusicIdea?.metadata?.name ?: "")
+    var name by mutableStateOf(existingMusicIdea?.metadata?.name ?: initialName)
     var genre by mutableStateOf(existingMusicIdea?.metadata?.genre ?: defaultGenre)
     var instrument by mutableStateOf(existingMusicIdea?.metadata?.instrument ?: defaultInstrument)
     private val defaultTempo = existingMusicIdea?.metadata?.tempo ?: initialTempo
@@ -32,6 +34,7 @@ class SaveViewModel(
     var tempoString by mutableStateOf(defaultTempo.toString())
     var rating by mutableStateOf(existingMusicIdea?.metadata?.rating ?: 0)
 
+    private val sampleRate = existingMusicIdea?.metadata?.sampleRate ?: initialSampleRate
     val isEditing = existingMusicIdea != null
 
     var saveError by mutableStateOf<String?>(null)
@@ -57,6 +60,7 @@ class SaveViewModel(
                 ideaType = ideaType,
                 tags = customTags.split(",").map { it.trim() }.filter { it.isNotEmpty() },
                 rating = rating,
+                sampleRate = sampleRate,
                 existingId = id
             )
             repository.save(musicIdea)

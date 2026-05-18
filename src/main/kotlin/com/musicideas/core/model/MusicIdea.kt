@@ -18,6 +18,7 @@ data class MusicIdea(
             ideaType: IdeaType,
             tags: List<String>,
             rating: Int = 0,
+            sampleRate: Int = 44100,
             existingId: String? = null
         ): MusicIdea {
             return MusicIdea(
@@ -30,6 +31,7 @@ data class MusicIdea(
                     ideaType = ideaType,
                     tags = tags,
                     rating = rating,
+                    sampleRate = sampleRate,
                     createdAt = System.currentTimeMillis()
                 ),
                 audioDataProvider = { audioData }
@@ -46,6 +48,7 @@ data class MusicIdeaMetadata(
     val ideaType: IdeaType,
     val tags: List<String>,
     val rating: Int = 0,
+    val sampleRate: Int = 44100,
     val createdAt: Long = System.currentTimeMillis()
 )
 

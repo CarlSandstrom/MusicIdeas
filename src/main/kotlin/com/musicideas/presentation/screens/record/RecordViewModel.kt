@@ -4,6 +4,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.musicideas.core.repository.AudioRepository
+import com.musicideas.data.audio.config.AudioFormatConfig
 import com.musicideas.presentation.common.ViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -95,7 +96,7 @@ class RecordViewModel(
     }
 
     private fun playMetronomeClick() {
-        val sampleRate = 44100f
+        val sampleRate = AudioFormatConfig.format.sampleRate
         val durationMs = 30
         val frequency = 880.0
         val numSamples = (sampleRate * durationMs / 1000).toInt()
@@ -169,7 +170,7 @@ class RecordViewModel(
                         delay(50)
                     }
                 }
-                audioRepository.playAudio(audio)
+                audioRepository.playAudio(audio, AudioFormatConfig.format.sampleRate.toInt())
                 positionJob.cancel()
                 isPlaying = false
                 currentTimeMs = 0f
@@ -191,7 +192,7 @@ class RecordViewModel(
     fun getLevel(): Float = if (isPlaying) playbackLevel else getInputLevel()
 
     private fun rmsLevelAt(audio: ByteArray, positionMs: Float): Float {
-        val byteOffset = (positionMs / 1000f * 44100f * 2).toInt().and(1.inv()).coerceIn(0, audio.size)
+        val byteOffset = (positionMs / 1000f * AudioFormatConfig.format.sampleRate * 2).toInt().and(1.inv()).coerceIn(0, audio.size)
         val end = (byteOffset + 4096).coerceAtMost(audio.size).and(1.inv())
         if (end <= byteOffset) return 0f
         var sum = 0.0

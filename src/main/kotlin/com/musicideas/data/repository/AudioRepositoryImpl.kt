@@ -28,10 +28,10 @@ class AudioRepositoryImpl(
         }
     }
 
-    override suspend fun playAudio(audioData: ByteArray): Result<Unit> = withContext(Dispatchers.IO) {
+    override suspend fun playAudio(audioData: ByteArray, sampleRate: Int): Result<Unit> = withContext(Dispatchers.IO) {
         runCatching {
-            println("Playing audio: ${audioData.size} bytes")
-            player.play(audioData)
+            println("Playing audio: ${audioData.size} bytes at ${sampleRate}Hz")
+            player.play(audioData, sampleRate)
         }
     }
 

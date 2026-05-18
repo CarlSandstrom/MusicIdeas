@@ -14,11 +14,27 @@ import androidx.compose.ui.input.pointer.PointerButton
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.onPointerEvent
 import com.musicideas.core.model.MusicIdea
+import com.musicideas.data.audio.config.AudioFormatConfig
+import com.musicideas.data.audio.encoding.Mp3Decoder
+import com.musicideas.presentation.screens.library.AudioImport
+import java.awt.Window
 import com.musicideas.presentation.screens.cloudstorage.CloudStorageView
+import org.koin.compose.getKoin
 import com.musicideas.presentation.screens.library.LibraryView
 import com.musicideas.presentation.screens.record.RecordView
 import com.musicideas.presentation.screens.save.SaveView
 import com.musicideas.presentation.screens.settings.SettingsView
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.awt.datatransfer.DataFlavor
+import java.awt.dnd.DnDConstants
+import java.awt.dnd.DropTarget
+import java.awt.dnd.DropTargetAdapter
+import java.awt.dnd.DropTargetDropEvent
+import java.awt.event.ContainerAdapter
+import java.awt.event.ContainerEvent
+import java.io.File
 
 sealed class Screen(val route: String, val title: String, val icon: ImageVector) {
     data object Record : Screen("record", "Record", Icons.Filled.Mic)
@@ -29,11 +45,13 @@ sealed class Screen(val route: String, val title: String, val icon: ImageVector)
     data object Edit : Screen("edit", "Edit Recording", Icons.Filled.Edit)
 }
 
+private data class PendingSave(val audioData: ByteArray, val tempo: Int, val name: String, val sampleRate: Int)
+
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun AppNavigation(mainViewModel: MainViewModel) {
+fun AppNavigation(mainViewModel: MainViewModel, window: Window) {
     var currentScreen by remember { mutableStateOf<Screen>(Screen.Record) }
-    var pendingSave by remember { mutableStateOf<Pair<ByteArray, Int>?>(null) }
+    var pendingSave by remember { mutableStateOf<PendingSave?>(null) }
     var musicIdeaToEdit by remember { mutableStateOf<MusicIdea?>(null) }
     var audioDataForEdit by remember { mutableStateOf<ByteArray?>(null) }
 
@@ -42,10 +60,12 @@ fun AppNavigation(mainViewModel: MainViewModel) {
     val settingsViewModel = remember { mainViewModel.createSettingsViewModel() }
     val cloudStorageViewModel = remember { mainViewModel.createCloudStorageViewModel() }
     val saveViewModel = remember(pendingSave) {
-        pendingSave?.let { (audioData, tempo) ->
+        pendingSave?.let { (audioData, tempo, name, sampleRate) ->
             mainViewModel.createSaveViewModel(
                 audioData = audioData,
                 initialTempo = tempo,
+                initialName = name,
+                initialSampleRate = sampleRate,
                 onSaveComplete = {
                     libraryViewModel.reload()
                     currentScreen = Screen.Record
@@ -78,6 +98,53 @@ fun AppNavigation(mainViewModel: MainViewModel) {
         } else {
             audioDataForEdit = null
         }
+    }
+
+    val scope = rememberCoroutineScope()
+    val koin = getKoin()
+    val mp3Decoder = remember { koin.get<Mp3Decoder>() }
+    LaunchedEffect(Unit) {
+        val dropListener = object : DropTargetAdapter() {
+            override fun drop(event: DropTargetDropEvent) {
+                event.acceptDrop(DnDConstants.ACTION_COPY)
+                @Suppress("UNCHECKED_CAST")
+                val files = (event.transferable.getTransferData(DataFlavor.javaFileListFlavor) as List<*>)
+                    .filterIsInstance<File>()
+                if (files.isEmpty()) { event.dropComplete(false); return }
+
+                if (currentScreen == Screen.Library) {
+                    scope.launch {
+                        val entries = withContext(Dispatchers.IO) {
+                            files.map { file ->
+                                val decoded = mp3Decoder.decode(file.readBytes())
+                                AudioImport(file.nameWithoutExtension, decoded.pcmBytes, decoded.sampleRate)
+                            }
+                        }
+                        libraryViewModel.importFiles(entries)
+                    }
+                } else {
+                    val file = files.first()
+                    scope.launch {
+                        val decoded = withContext(Dispatchers.IO) { mp3Decoder.decode(file.readBytes()) }
+                        pendingSave = PendingSave(decoded.pcmBytes, 120, file.nameWithoutExtension, decoded.sampleRate)
+                        currentScreen = Screen.Save
+                    }
+                }
+                event.dropComplete(true)
+            }
+        }
+
+        fun java.awt.Component.installDropTarget() {
+            dropTarget = DropTarget(this, DnDConstants.ACTION_COPY, dropListener)
+            if (this is java.awt.Container) {
+                addContainerListener(object : ContainerAdapter() {
+                    override fun componentAdded(e: ContainerEvent) = e.child.installDropTarget()
+                })
+                components.forEach { it.installDropTarget() }
+            }
+        }
+
+        window.installDropTarget()
     }
 
     val onBack: (() -> Unit)? = when (currentScreen) {
@@ -129,7 +196,7 @@ fun AppNavigation(mainViewModel: MainViewModel) {
                     Screen.Record -> RecordView(
                         viewModel = recordViewModel,
                         onSave = { audioData, tempo ->
-                            pendingSave = Pair(audioData, tempo)
+                            pendingSave = PendingSave(audioData, tempo, "", AudioFormatConfig.format.sampleRate.toInt())
                             currentScreen = Screen.Save
                         }
                     )

@@ -21,14 +21,14 @@ class MusicIdeaStorageFileSystem(
     }
 
     override suspend fun saveMusicIdea(musicIdea: MusicIdea) {
-        val mp3Data = mp3Encoder.encodeToBytes(musicIdea.audioDataProvider())
+        val mp3Data = mp3Encoder.encodeToBytes(musicIdea.audioDataProvider(), musicIdea.metadata.sampleRate)
         File(audioDir, "${musicIdea.id}.mp3").writeBytes(mp3Data)
         File(metadataDir, "${musicIdea.id}.json").writeText(serializeMetadata(musicIdea))
     }
 
     private fun loadAudioBytes(id: String): ByteArray {
         val mp3File = File(audioDir, "$id.mp3")
-        if (mp3File.exists()) return mp3Decoder.decode(mp3File.readBytes())
+        if (mp3File.exists()) return mp3Decoder.decode(mp3File.readBytes()).pcmBytes
         val rawFile = File(audioDir, "$id.raw")
         return if (rawFile.exists()) rawFile.readBytes() else ByteArray(0)
     }
