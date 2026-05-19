@@ -81,6 +81,13 @@ fun RecordView(viewModel: RecordViewModel, onSave: (ByteArray, Int) -> Unit) {
             }
 
             Button(
+                onClick = { viewModel.discardRecording() },
+                enabled = !viewModel.isRecording && !viewModel.isPlaying && viewModel.audioData != null
+            ) {
+                Text("Discard")
+            }
+
+            Button(
                 onClick = {
                     viewModel.audioData?.let { audio ->
                         val tempo = viewModel.recordingTempo

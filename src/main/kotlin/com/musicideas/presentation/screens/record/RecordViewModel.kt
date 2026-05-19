@@ -187,6 +187,13 @@ class RecordViewModel(
         }
     }
 
+    fun discardRecording() {
+        audioData = null
+        liveBuffer = ByteArray(0)
+        currentTimeMs = 0f
+        audioRepository.startMonitoring()
+    }
+
     fun getInputLevel(): Float = audioRepository.getInputLevel()
 
     fun getLevel(): Float = if (isPlaying) playbackLevel else getInputLevel()
