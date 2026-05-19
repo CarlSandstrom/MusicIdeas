@@ -21,7 +21,8 @@ class SaveViewModel(
     initialName: String = "",
     initialSampleRate: Int = 44100,
     defaultGenre: Genre = Genre.ROCK,
-    defaultInstrument: Instrument = Instrument.GUITAR
+    defaultInstrument: Instrument = Instrument.GUITAR,
+    defaultIdeaType: IdeaType = IdeaType.RIFF
 ) : ViewModel() {
     var id by mutableStateOf(existingMusicIdea?.id ?: UUID.randomUUID().toString())
     var name by mutableStateOf(existingMusicIdea?.metadata?.name ?: initialName)
@@ -29,7 +30,7 @@ class SaveViewModel(
     var instrument by mutableStateOf(existingMusicIdea?.metadata?.instrument ?: defaultInstrument)
     private val defaultTempo = existingMusicIdea?.metadata?.tempo ?: initialTempo
     var tempo by mutableStateOf(defaultTempo)
-    var ideaType by mutableStateOf(existingMusicIdea?.metadata?.ideaType ?: IdeaType.RIFF)
+    var ideaType by mutableStateOf(existingMusicIdea?.metadata?.ideaType ?: defaultIdeaType)
     var customTags by mutableStateOf(existingMusicIdea?.metadata?.tags?.joinToString(",") ?: "")
     var tempoString by mutableStateOf(defaultTempo.toString())
     var rating by mutableStateOf(existingMusicIdea?.metadata?.rating ?: 0)

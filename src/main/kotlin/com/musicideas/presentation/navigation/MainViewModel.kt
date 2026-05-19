@@ -59,7 +59,8 @@ class MainViewModel(
             existingMusicIdea = existingMusicIdea,
             onSaveComplete = onSaveComplete,
             defaultGenre = settings.defaultGenre,
-            defaultInstrument = settings.defaultInstrument
+            defaultInstrument = settings.defaultInstrument,
+            defaultIdeaType = settings.defaultIdeaType
         )
     }
 }

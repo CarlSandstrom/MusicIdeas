@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.musicideas.core.model.AudioQuality
 import com.musicideas.core.model.Genre
+import com.musicideas.core.model.IdeaType
 import com.musicideas.core.model.Instrument
 import com.musicideas.presentation.components.ComboBox
 
@@ -63,6 +64,13 @@ fun SettingsView(viewModel: SettingsViewModel) {
                 options = Instrument.entries.toList(),
                 selectedOption = viewModel.defaultInstrument,
                 onOptionSelected = { viewModel.onDefaultInstrumentSelected(it) }
+            )
+
+            ComboBox(
+                label = "Default Idea Type",
+                options = IdeaType.entries.toList(),
+                selectedOption = viewModel.defaultIdeaType,
+                onOptionSelected = { viewModel.onDefaultIdeaTypeSelected(it) }
             )
 
             Row(

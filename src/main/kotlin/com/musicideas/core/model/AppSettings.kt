@@ -9,7 +9,8 @@ data class AppSettings(
     val saveLocation: String = System.getProperty("user.home") + "/MusicIdeas",
     val darkMode: Boolean = false,
     val defaultGenre: Genre = Genre.ROCK,
-    val defaultInstrument: Instrument = Instrument.GUITAR
+    val defaultInstrument: Instrument = Instrument.GUITAR,
+    val defaultIdeaType: IdeaType = IdeaType.RIFF
 )
 
 @Serializable

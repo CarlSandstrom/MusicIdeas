@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import com.musicideas.core.model.AppSettings
 import com.musicideas.core.model.AudioQuality
 import com.musicideas.core.model.Genre
+import com.musicideas.core.model.IdeaType
 import com.musicideas.core.model.Instrument
 import com.musicideas.core.repository.AudioRepository
 import com.musicideas.core.repository.SettingsRepository
@@ -22,6 +23,7 @@ class SettingsViewModel(
     var darkMode by mutableStateOf(false)
     var defaultGenre by mutableStateOf(Genre.ROCK)
     var defaultInstrument by mutableStateOf(Instrument.GUITAR)
+    var defaultIdeaType by mutableStateOf(IdeaType.RIFF)
 
     var availableInputDevices by mutableStateOf(emptyList<String>())
         private set
@@ -37,6 +39,7 @@ class SettingsViewModel(
         darkMode = saved.darkMode
         defaultGenre = saved.defaultGenre
         defaultInstrument = saved.defaultInstrument
+        defaultIdeaType = saved.defaultIdeaType
 
         selectedInputDevice = if (saved.selectedInputDevice.isNotEmpty() &&
             availableInputDevices.contains(saved.selectedInputDevice)
@@ -81,6 +84,11 @@ class SettingsViewModel(
         saveSettings()
     }
 
+    fun onDefaultIdeaTypeSelected(ideaType: IdeaType) {
+        defaultIdeaType = ideaType
+        saveSettings()
+    }
+
     private fun saveSettings() {
         settingsRepository.save(
             AppSettings(
@@ -89,7 +97,8 @@ class SettingsViewModel(
                 saveLocation = saveLocation,
                 darkMode = darkMode,
                 defaultGenre = defaultGenre,
-                defaultInstrument = defaultInstrument
+                defaultInstrument = defaultInstrument,
+                defaultIdeaType = defaultIdeaType
             )
         )
     }
