@@ -24,6 +24,10 @@ class SettingsViewModel(
     var defaultGenre by mutableStateOf(Genre.ROCK)
     var defaultInstrument by mutableStateOf(Instrument.GUITAR)
     var defaultIdeaType by mutableStateOf(IdeaType.RIFF)
+    var showGenreFilter by mutableStateOf(true)
+    var showInstrumentFilter by mutableStateOf(true)
+    var showIdeaTypeFilter by mutableStateOf(true)
+    var showRatingFilter by mutableStateOf(true)
 
     var availableInputDevices by mutableStateOf(emptyList<String>())
         private set
@@ -40,6 +44,10 @@ class SettingsViewModel(
         defaultGenre = saved.defaultGenre
         defaultInstrument = saved.defaultInstrument
         defaultIdeaType = saved.defaultIdeaType
+        showGenreFilter = saved.showGenreFilter
+        showInstrumentFilter = saved.showInstrumentFilter
+        showIdeaTypeFilter = saved.showIdeaTypeFilter
+        showRatingFilter = saved.showRatingFilter
 
         selectedInputDevice = if (saved.selectedInputDevice.isNotEmpty() &&
             availableInputDevices.contains(saved.selectedInputDevice)
@@ -89,6 +97,11 @@ class SettingsViewModel(
         saveSettings()
     }
 
+    fun onShowGenreFilterChanged(show: Boolean) { showGenreFilter = show; saveSettings() }
+    fun onShowInstrumentFilterChanged(show: Boolean) { showInstrumentFilter = show; saveSettings() }
+    fun onShowIdeaTypeFilterChanged(show: Boolean) { showIdeaTypeFilter = show; saveSettings() }
+    fun onShowRatingFilterChanged(show: Boolean) { showRatingFilter = show; saveSettings() }
+
     private fun saveSettings() {
         settingsRepository.save(
             AppSettings(
@@ -98,7 +111,11 @@ class SettingsViewModel(
                 darkMode = darkMode,
                 defaultGenre = defaultGenre,
                 defaultInstrument = defaultInstrument,
-                defaultIdeaType = defaultIdeaType
+                defaultIdeaType = defaultIdeaType,
+                showGenreFilter = showGenreFilter,
+                showInstrumentFilter = showInstrumentFilter,
+                showIdeaTypeFilter = showIdeaTypeFilter,
+                showRatingFilter = showRatingFilter
             )
         )
     }

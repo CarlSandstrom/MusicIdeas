@@ -30,6 +30,10 @@ fun FilterPanel(
     onTimeRangeChange: (ClosedRange<Long>) -> Unit,
     minRating: Int = 0,
     onMinRatingChange: (Int) -> Unit = {},
+    showGenre: Boolean = true,
+    showInstrument: Boolean = true,
+    showIdeaType: Boolean = true,
+    showRating: Boolean = true,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -38,37 +42,40 @@ fun FilterPanel(
     ) {
         Text("Filters", style = MaterialTheme.typography.h6)
 
-        // Genre Filter
-        FilterDropdown(
-            label = "Genre",
-            options = Genre.entries.toList(),
-            selectedOption = selectedGenre,
-            onOptionSelected = onGenreSelected,
-            includeAny = true
-        )
+        if (showGenre) {
+            FilterDropdown(
+                label = "Genre",
+                options = Genre.entries.toList(),
+                selectedOption = selectedGenre,
+                onOptionSelected = onGenreSelected,
+                includeAny = true
+            )
+        }
 
-        // Instrument Filter
-        FilterDropdown(
-            label = "Instrument",
-            options = Instrument.entries.toList(),
-            selectedOption = selectedInstrument,
-            onOptionSelected = onInstrumentSelected,
-            includeAny = true
-        )
+        if (showInstrument) {
+            FilterDropdown(
+                label = "Instrument",
+                options = Instrument.entries.toList(),
+                selectedOption = selectedInstrument,
+                onOptionSelected = onInstrumentSelected,
+                includeAny = true
+            )
+        }
 
-        // Idea Type Filter
-        FilterDropdown(
-            label = "Idea Type",
-            options = IdeaType.entries.toList(),
-            selectedOption = selectedIdeaType,
-            onOptionSelected = onIdeaTypeSelected,
-            includeAny = true
-        )
+        if (showIdeaType) {
+            FilterDropdown(
+                label = "Idea Type",
+                options = IdeaType.entries.toList(),
+                selectedOption = selectedIdeaType,
+                onOptionSelected = onIdeaTypeSelected,
+                includeAny = true
+            )
+        }
 
-        // Rating Filter
-        RatingFilter(minRating = minRating, onMinRatingChange = onMinRatingChange)
+        if (showRating) {
+            RatingFilter(minRating = minRating, onMinRatingChange = onMinRatingChange)
+        }
 
-        // Time Range Filter
         TimeRangeSlider(
             timeRange = timeRange,
             fullRange = fullTimeRange,

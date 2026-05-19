@@ -3,10 +3,12 @@ package com.musicideas.presentation.navigation
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.Row
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -167,12 +169,51 @@ fun AppNavigation(mainViewModel: MainViewModel, window: Window) {
     ) {
         Scaffold(
             topBar = {
+                var showFilterMenu by remember { mutableStateOf(false) }
                 TopAppBar(
                     title = { Text(currentScreen.title) },
                     navigationIcon = onBack?.let { back ->
                         {
                             IconButton(onClick = back) {
                                 Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
+                            }
+                        }
+                    },
+                    actions = {
+                        if (currentScreen == Screen.Library) {
+                            Box {
+                                IconButton(onClick = { showFilterMenu = true }) {
+                                    Icon(Icons.Filled.Tune, contentDescription = "Filter visibility")
+                                }
+                                DropdownMenu(
+                                    expanded = showFilterMenu,
+                                    onDismissRequest = { showFilterMenu = false }
+                                ) {
+                                    DropdownMenuItem(onClick = { settingsViewModel.onShowGenreFilterChanged(!settingsViewModel.showGenreFilter) }) {
+                                        Row(verticalAlignment = Alignment.CenterVertically) {
+                                            Checkbox(checked = settingsViewModel.showGenreFilter, onCheckedChange = null)
+                                            Text("Genre")
+                                        }
+                                    }
+                                    DropdownMenuItem(onClick = { settingsViewModel.onShowInstrumentFilterChanged(!settingsViewModel.showInstrumentFilter) }) {
+                                        Row(verticalAlignment = Alignment.CenterVertically) {
+                                            Checkbox(checked = settingsViewModel.showInstrumentFilter, onCheckedChange = null)
+                                            Text("Instrument")
+                                        }
+                                    }
+                                    DropdownMenuItem(onClick = { settingsViewModel.onShowIdeaTypeFilterChanged(!settingsViewModel.showIdeaTypeFilter) }) {
+                                        Row(verticalAlignment = Alignment.CenterVertically) {
+                                            Checkbox(checked = settingsViewModel.showIdeaTypeFilter, onCheckedChange = null)
+                                            Text("Idea Type")
+                                        }
+                                    }
+                                    DropdownMenuItem(onClick = { settingsViewModel.onShowRatingFilterChanged(!settingsViewModel.showRatingFilter) }) {
+                                        Row(verticalAlignment = Alignment.CenterVertically) {
+                                            Checkbox(checked = settingsViewModel.showRatingFilter, onCheckedChange = null)
+                                            Text("Rating")
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
@@ -202,6 +243,10 @@ fun AppNavigation(mainViewModel: MainViewModel, window: Window) {
                     )
                     Screen.Library -> LibraryView(
                         viewModel = libraryViewModel,
+                        showGenreFilter = settingsViewModel.showGenreFilter,
+                        showInstrumentFilter = settingsViewModel.showInstrumentFilter,
+                        showIdeaTypeFilter = settingsViewModel.showIdeaTypeFilter,
+                        showRatingFilter = settingsViewModel.showRatingFilter,
                         onEdit = { musicIdea ->
                             musicIdeaToEdit = musicIdea
                             currentScreen = Screen.Edit

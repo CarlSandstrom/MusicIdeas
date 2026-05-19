@@ -10,7 +10,11 @@ data class AppSettings(
     val darkMode: Boolean = false,
     val defaultGenre: Genre = Genre.ROCK,
     val defaultInstrument: Instrument = Instrument.GUITAR,
-    val defaultIdeaType: IdeaType = IdeaType.RIFF
+    val defaultIdeaType: IdeaType = IdeaType.RIFF,
+    val showGenreFilter: Boolean = true,
+    val showInstrumentFilter: Boolean = true,
+    val showIdeaTypeFilter: Boolean = true,
+    val showRatingFilter: Boolean = true
 )
 
 @Serializable

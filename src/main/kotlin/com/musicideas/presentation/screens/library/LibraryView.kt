@@ -16,6 +16,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -28,8 +29,17 @@ import com.musicideas.presentation.components.TagFilterInput
 @Composable
 fun LibraryView(
     viewModel: LibraryViewModel,
+    showGenreFilter: Boolean = true,
+    showInstrumentFilter: Boolean = true,
+    showIdeaTypeFilter: Boolean = true,
+    showRatingFilter: Boolean = true,
     onEdit: (MusicIdea) -> Unit = {}
 ) {
+    LaunchedEffect(showGenreFilter) { if (!showGenreFilter) viewModel.updateFilter { copy(selectedGenre = null) } }
+    LaunchedEffect(showInstrumentFilter) { if (!showInstrumentFilter) viewModel.updateFilter { copy(selectedInstrument = null) } }
+    LaunchedEffect(showIdeaTypeFilter) { if (!showIdeaTypeFilter) viewModel.updateFilter { copy(selectedIdeaType = null) } }
+    LaunchedEffect(showRatingFilter) { if (!showRatingFilter) viewModel.updateFilter { copy(minRating = 0) } }
+
     Column(
         modifier = Modifier.fillMaxSize().padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
@@ -56,7 +66,11 @@ fun LibraryView(
                         fullTimeRange = viewModel.filterState.fullTimeRange,
                         onTimeRangeChange = { viewModel.updateFilter { copy(timeRange = it) } },
                         minRating = viewModel.filterState.minRating,
-                        onMinRatingChange = { viewModel.updateFilter { copy(minRating = it) } }
+                        onMinRatingChange = { viewModel.updateFilter { copy(minRating = it) } },
+                        showGenre = showGenreFilter,
+                        showInstrument = showInstrumentFilter,
+                        showIdeaType = showIdeaTypeFilter,
+                        showRating = showRatingFilter
                     )
 
                     TagFilterInput(
