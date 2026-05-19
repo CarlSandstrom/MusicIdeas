@@ -6,7 +6,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -15,9 +17,54 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.musicideas.presentation.components.VolumeGauge
 import com.musicideas.presentation.components.WaveformView
+import java.awt.KeyboardFocusManager
 
 @Composable
 fun RecordView(viewModel: RecordViewModel, onSave: (ByteArray, Int) -> Unit) {
+    val onSaveUpdated = rememberUpdatedState(onSave)
+
+    DisposableEffect(Unit) {
+        val dispatcher = java.awt.KeyEventDispatcher { e ->
+            if (e.id != java.awt.event.KeyEvent.KEY_PRESSED) return@KeyEventDispatcher false
+            when (e.keyCode) {
+                java.awt.event.KeyEvent.VK_SPACE -> when {
+                    viewModel.isRecording -> { viewModel.stopRecording(); true }
+                    !viewModel.isPlaying && viewModel.audioData == null -> { viewModel.startRecording(); true }
+                    else -> false
+                }
+                java.awt.event.KeyEvent.VK_ENTER -> {
+                    if (!viewModel.isPlaying && !viewModel.isRecording && viewModel.audioData != null) {
+                        viewModel.startPlayback(); true
+                    } else false
+                }
+                java.awt.event.KeyEvent.VK_DELETE, java.awt.event.KeyEvent.VK_BACK_SPACE -> {
+                    if (!viewModel.isRecording && !viewModel.isPlaying && viewModel.audioData != null) {
+                        viewModel.discardRecording(); true
+                    } else false
+                }
+                java.awt.event.KeyEvent.VK_ESCAPE -> when {
+                    viewModel.isRecording -> { viewModel.stopRecording(); true }
+                    viewModel.isPlaying -> { viewModel.stopPlayback(); true }
+                    else -> false
+                }
+                java.awt.event.KeyEvent.VK_S -> {
+                    if (e.isControlDown && !viewModel.isRecording && !viewModel.isPlaying && viewModel.audioData != null) {
+                        viewModel.audioData?.let { audio ->
+                            viewModel.stopMetronome()
+                            onSaveUpdated.value(audio, viewModel.recordingTempo)
+                        }
+                        true
+                    } else false
+                }
+                else -> false
+            }
+        }
+        KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(dispatcher)
+        onDispose {
+            KeyboardFocusManager.getCurrentKeyboardFocusManager().removeKeyEventDispatcher(dispatcher)
+        }
+    }
+
     Column(
         modifier = Modifier.fillMaxSize().padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
