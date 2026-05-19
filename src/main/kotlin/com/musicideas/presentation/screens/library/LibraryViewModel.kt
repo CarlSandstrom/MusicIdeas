@@ -18,6 +18,9 @@ import java.io.File
 
 data class AudioImport(val name: String, val audioData: ByteArray, val sampleRate: Int)
 
+enum class SortOption { DATE, RATING, DURATION, BPM }
+enum class SortDirection { ASCENDING, DESCENDING }
+
 data class FilterState(
     val selectedGenre: Genre? = null,
     val selectedInstrument: Instrument? = null,
@@ -35,6 +38,9 @@ class LibraryViewModel(
     private val audioRepository: AudioRepository,
     private val exportDialog: ExportDialog
 ) : ViewModel() {
+
+    var sortOption by mutableStateOf(SortOption.DATE)
+    var sortDirection by mutableStateOf(SortDirection.DESCENDING)
 
     var showDeleteConfirmation by mutableStateOf(false)
         private set
@@ -106,7 +112,14 @@ class LibraryViewModel(
             }
         }
 
-        filtered
+        val comparator: Comparator<MusicIdea> = when (sortOption) {
+            SortOption.DATE     -> compareBy { it.metadata.createdAt }
+            SortOption.RATING   -> compareBy { it.metadata.rating }
+            SortOption.DURATION -> compareBy { it.metadata.durationMs }
+            SortOption.BPM      -> compareBy { it.metadata.tempo }
+        }
+        if (sortDirection == SortDirection.DESCENDING) filtered.sortedWith(comparator.reversed())
+        else filtered.sortedWith(comparator)
     }
 
     init {
@@ -143,6 +156,10 @@ class LibraryViewModel(
             val idea = musicIdeas.find { it.id == id } ?: return@launch
             musicIdeaRepository.exportToMp3(idea, path)
         }
+    }
+
+    fun toggleSortDirection() {
+        sortDirection = if (sortDirection == SortDirection.ASCENDING) SortDirection.DESCENDING else SortDirection.ASCENDING
     }
 
     fun updateFilter(update: FilterState.() -> FilterState) {

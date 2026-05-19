@@ -8,15 +8,25 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.DropdownMenu
+import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDownward
+import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -94,14 +104,51 @@ fun LibraryView(
             // Right panel with filtered results
             val listState = rememberLazyListState()
             Column(modifier = Modifier.weight(1f).fillMaxHeight(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                OutlinedTextField(
-                    value = viewModel.filterState.titleQuery,
-                    onValueChange = { viewModel.updateFilter { copy(titleQuery = it) } },
+                Row(
                     modifier = Modifier.fillMaxWidth(),
-                    placeholder = { Text("Search by title…") },
-                    leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
-                    singleLine = true
-                )
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    OutlinedTextField(
+                        value = viewModel.filterState.titleQuery,
+                        onValueChange = { viewModel.updateFilter { copy(titleQuery = it) } },
+                        modifier = Modifier.weight(1f),
+                        placeholder = { Text("Search by title…") },
+                        leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+                        singleLine = true
+                    )
+                    var sortMenuExpanded by remember { mutableStateOf(false) }
+                    Box {
+                        OutlinedButton(onClick = { sortMenuExpanded = true }) {
+                            Text(viewModel.sortOption.name.lowercase().replaceFirstChar { it.uppercase() })
+                        }
+                        DropdownMenu(
+                            expanded = sortMenuExpanded,
+                            onDismissRequest = { sortMenuExpanded = false }
+                        ) {
+                            SortOption.entries.forEach { option ->
+                                DropdownMenuItem(onClick = {
+                                    viewModel.sortOption = option
+                                    sortMenuExpanded = false
+                                }) {
+                                    Text(when (option) {
+                                        SortOption.DATE     -> "Date"
+                                        SortOption.RATING   -> "Rating"
+                                        SortOption.DURATION -> "Duration"
+                                        SortOption.BPM      -> "BPM"
+                                    })
+                                }
+                            }
+                        }
+                    }
+                    IconButton(onClick = { viewModel.toggleSortDirection() }) {
+                        Icon(
+                            imageVector = if (viewModel.sortDirection == SortDirection.DESCENDING)
+                                Icons.Default.ArrowDownward else Icons.Default.ArrowUpward,
+                            contentDescription = "Sort direction"
+                        )
+                    }
+                }
                 Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
                     LazyColumn(
                         state = listState,
