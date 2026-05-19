@@ -120,13 +120,17 @@ class LibraryViewModel(
             musicIdeaRepository.getAll().onSuccess { ideas ->
                 _musicIdeas = ideas
 
-                // Update the time range based on actual recordings
+                // Update the time range based on actual recordings.
+                // Pad to at least 1 day so the RangeSlider always has a non-zero float range.
                 if (ideas.isNotEmpty()) {
-                    val oldestRecording = ideas.minOf { it.metadata.createdAt }
-                    val newestRecording = ideas.maxOf { it.metadata.createdAt }
+                    val oldest = ideas.minOf { it.metadata.createdAt }
+                    val newest = ideas.maxOf { it.metadata.createdAt }
+                    val oneDayMs = 86_400_000L
+                    val start = if (newest - oldest < oneDayMs) oldest - oneDayMs / 2 else oldest
+                    val end = if (newest - oldest < oneDayMs) newest + oneDayMs / 2 else newest
                     _filterState = _filterState.copy(
-                        timeRange = oldestRecording..newestRecording,
-                        fullTimeRange = oldestRecording..newestRecording
+                        timeRange = start..end,
+                        fullTimeRange = start..end
                     )
                 }
             }

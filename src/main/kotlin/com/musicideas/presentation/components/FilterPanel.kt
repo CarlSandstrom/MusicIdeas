@@ -163,6 +163,8 @@ fun TimeRangeSlider(
     onTimeRangeChange: (ClosedRange<Long>) -> Unit
 ) {
     val dateFormatter = remember { SimpleDateFormat("MMM dd, yyyy", Locale.getDefault()) }
+    val fullStart = fullRange.start.toFloat()
+    val fullEnd = fullRange.endInclusive.toFloat()
 
     Column {
         Text("Time Range", style = MaterialTheme.typography.subtitle1)
@@ -171,12 +173,14 @@ fun TimeRangeSlider(
             style = MaterialTheme.typography.caption
         )
 
-        RangeSlider(
-            value = timeRange.start.toFloat()..timeRange.endInclusive.toFloat(),
-            onValueChange = { range ->
-                onTimeRangeChange(range.start.toLong()..range.endInclusive.toLong())
-            },
-            valueRange = fullRange.start.toFloat()..fullRange.endInclusive.toFloat()
-        )
+        if (fullStart < fullEnd) {
+            RangeSlider(
+                value = timeRange.start.toFloat()..timeRange.endInclusive.toFloat(),
+                onValueChange = { range ->
+                    onTimeRangeChange(range.start.toLong()..range.endInclusive.toLong())
+                },
+                valueRange = fullStart..fullEnd
+            )
+        }
     }
 }
