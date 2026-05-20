@@ -7,8 +7,8 @@ plugins {
     kotlin("plugin.serialization") version "2.1.0"
 }
 
-group = "org.example"
-version = "1.0-SNAPSHOT"
+group = "com.musicideas"
+version = "1.0.0-beta"
 
 repositories {
     mavenCentral()
@@ -39,8 +39,15 @@ compose.desktop {
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "AudioTest"
+            packageName = "MusicIdeas"
             packageVersion = "1.0.0"
+
+            windows {
+                iconFile.set(project.file("src/main/resources/MusicIdeas_icon.ico"))
+            }
+            linux {
+                iconFile.set(project.file("src/main/resources/MusicIdeas_icon.png"))
+            }
         }
     }
 }

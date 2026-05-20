@@ -9,7 +9,6 @@ import com.musicideas.core.repository.ExportDialog
 import com.musicideas.core.repository.MusicIdeaRepository
 import com.musicideas.core.repository.SettingsRepository
 import com.musicideas.presentation.common.ViewModel
-import com.musicideas.presentation.screens.cloudstorage.CloudStorageViewModel
 import com.musicideas.presentation.screens.library.LibraryViewModel
 import com.musicideas.presentation.screens.record.RecordViewModel
 import com.musicideas.presentation.screens.save.SaveViewModel
@@ -31,10 +30,6 @@ class MainViewModel(
 
     fun createLibraryViewModel(): LibraryViewModel {
         return LibraryViewModel(musicIdeaRepository, audioRepository, exportDialog)
-    }
-
-    fun createCloudStorageViewModel(): CloudStorageViewModel {
-        return CloudStorageViewModel()
     }
 
     fun createSettingsViewModel(): SettingsViewModel {

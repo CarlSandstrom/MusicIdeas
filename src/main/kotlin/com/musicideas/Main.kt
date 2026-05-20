@@ -1,6 +1,7 @@
 // Main.kt
 package com.musicideas
 
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.Window
 import org.bytedeco.ffmpeg.global.avutil
@@ -20,7 +21,8 @@ fun main() = application {
 
     Window(
         onCloseRequest = ::exitApplication,
-        title = "Music Ideas"
+        title = "Music Ideas",
+        icon = painterResource("MusicIdeas_icon.png")
     ) {
         MainWindow(mainViewModel, window)
     }

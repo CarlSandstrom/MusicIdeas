@@ -20,7 +20,6 @@ import com.musicideas.data.audio.config.AudioFormatConfig
 import com.musicideas.data.audio.encoding.Mp3Decoder
 import com.musicideas.presentation.screens.library.AudioImport
 import java.awt.Window
-import com.musicideas.presentation.screens.cloudstorage.CloudStorageView
 import org.koin.compose.getKoin
 import com.musicideas.presentation.screens.library.LibraryView
 import com.musicideas.presentation.screens.record.RecordView
@@ -42,7 +41,6 @@ sealed class Screen(val route: String, val title: String, val icon: ImageVector)
     data object Record : Screen("record", "Record", Icons.Filled.Mic)
     data object Library : Screen("library", "Library", Icons.Filled.LibraryMusic)
     data object Settings : Screen("settings", "Settings", Icons.Filled.Settings)
-    data object CloudStorage : Screen("cloud", "Cloud Storage", Icons.Filled.Cloud)
     data object Save : Screen("save", "Save Recording", Icons.Filled.Save)
     data object Edit : Screen("edit", "Edit Recording", Icons.Filled.Edit)
 }
@@ -60,7 +58,6 @@ fun AppNavigation(mainViewModel: MainViewModel, window: Window) {
     val recordViewModel = remember { mainViewModel.createRecordViewModel() }
     val libraryViewModel = remember { mainViewModel.createLibraryViewModel() }
     val settingsViewModel = remember { mainViewModel.createSettingsViewModel() }
-    val cloudStorageViewModel = remember { mainViewModel.createCloudStorageViewModel() }
     val saveViewModel = remember(pendingSave) {
         pendingSave?.let { (audioData, tempo, name, sampleRate) ->
             mainViewModel.createSaveViewModel(
@@ -221,7 +218,7 @@ fun AppNavigation(mainViewModel: MainViewModel, window: Window) {
             },
             bottomBar = {
                 BottomNavigation {
-                    listOf(Screen.Record, Screen.Library, Screen.Settings, Screen.CloudStorage).forEach { screen ->
+                    listOf(Screen.Record, Screen.Library, Screen.Settings).forEach { screen ->
                         BottomNavigationItem(
                             icon = { Icon(screen.icon, contentDescription = screen.title) },
                             label = { Text(screen.title) },
@@ -253,7 +250,6 @@ fun AppNavigation(mainViewModel: MainViewModel, window: Window) {
                         }
                     )
                     Screen.Settings -> SettingsView(settingsViewModel)
-                    Screen.CloudStorage -> CloudStorageView(cloudStorageViewModel)
                     Screen.Save -> saveViewModel?.let { SaveView(it) }
                     Screen.Edit -> editViewModel?.let { SaveView(it) }
                 }
