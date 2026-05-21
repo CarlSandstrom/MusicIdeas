@@ -2,6 +2,13 @@
 
 A desktop app for musicians to quickly capture and tag audio ideas. Record a riff, attach metadata, browse your library, and export to MP3 — without getting in your way.
 
+## Screenshots
+
+![Record screen](docs/screenshots/RecordView.png) 
+![Save screen](docs/screenshots/SaveView.png)
+![Library screen](docs/screenshots/LibraryView.png)
+
+
 ## Requirements
 
 - **Java 22** (Amazon Corretto 22 recommended)
