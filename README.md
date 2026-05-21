@@ -10,6 +10,8 @@ A desktop app for musicians to quickly capture and tag audio ideas. Record a rif
 
 ## Building and running
 
+There is an installation file for Windows in Releases. For running the latest version (or for Linux or MacOs), follow this guide:
+
 Set `JAVA_HOME` before running Gradle (the JDK is not picked up from PATH automatically):
 
 ```powershell
